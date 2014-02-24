@@ -32,7 +32,7 @@ class LightSource(pyafai.Object):
         
         self.inf = influence.CircularInfluence(x, y, diffuse = diffuse)
         
-        self.add_shape(shapes.Circle(4, ('c3B', (210,210,0))))
+        self.add_shape(shapes.Circle(4, color=('c3B', (210,210,0))))
 
 
 class Sensor(pyafai.Perception):
@@ -61,7 +61,7 @@ class VehicleBody(objects.SimplePhysicsObject):
         self._axle = 10
         self._vel_wheelL = 0.0
         self._vel_wheelR = 0.0
-        self._vel_max = 30.0
+        self._vel_max = 50.0
 
     @property
     def vel_wheels(self):
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     v = Vehicle(250,100)
     v.body.angle = 90
     world.add_agent(v)
-    l = LightSource(100,200, diffuse=0.004)
+    l = LightSource(260,200, diffuse=0.004)
     world.add_light(l)
     #l = LightSource(300,300, diffuse=0.01)
     #world.add_light(l)
