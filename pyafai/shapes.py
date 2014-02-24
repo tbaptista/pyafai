@@ -57,7 +57,7 @@ class Triangle(Shape):
         
 
 class Circle(Shape):
-    def __init__(self, r, color = ('c3B', (255,255,255))):
+    def __init__(self, r, cx = 0, cy = 0, color = ('c3B', (255,255,255))):
         Shape.__init__(self, color)
         
         self.gl_type = pyglet.gl.GL_TRIANGLES
@@ -65,15 +65,16 @@ class Circle(Shape):
         dang = 2*pi / sides
         ang = 0
         x = math.cos(ang) * r
-        y = math.sin(ang) * r        
+        y = math.sin(ang) * r
         vertices = [0,0,r,0,x,y]
         for i in range(sides+1):
             x = math.cos(ang) * r
             y = math.sin(ang) * r
             vertices.extend([0,0,vertices[-2], vertices[-1],x,y])
             ang += dang
-            
-        #vertices.extend(vertices[-2:])
+
+        self.vertices = ('v2f', vertices)
+        vertices = self.translate(cx, cy)
         self.vertices = ('v2f', vertices)
             
         

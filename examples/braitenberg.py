@@ -42,12 +42,11 @@ class Sensor(pyafai.Perception):
         self._y = y
 
     def update(self, agent):
-        imap = agent.world.influence_map
         s = math.sin(agent.body.angle * DEG2RAD)
         c = math.cos(agent.body.angle * DEG2RAD)
         x = agent.body.x + c * self._x - s * self._y
         y = agent.body.y + s * self._x + c * self._y
-        self.value = imap.get_value(x, y)
+        self.value = agent.world.get_light(x, y)
         
 
 class VehicleBody(objects.SimplePhysicsObject):
@@ -115,6 +114,7 @@ class BraitenbergWorld(pyafai.World2D):
     def __init__(self, width=500, height=500, sector=10):
         super(BraitenbergWorld, self).__init__(width, height)
         
+        #make influence map bigger than world by 100 pixels all around
         self._imap = influence.InfluenceMap(width, height, sector)
         self._imap_display = influence.InfluenceMapDisplay(self._imap, color=('c3B', (200,200,0)))
         self.show_influence_map = False
@@ -130,17 +130,17 @@ class BraitenbergWorld(pyafai.World2D):
             self._imap_display.update()
             self._imap_display.batch.draw()
 
-    @property
-    def influence_map(self):
-        return self._imap
+
+    def get_light(self, x, y):
+        return self._imap.get_value(x, y)
         
 
 
 if __name__ == '__main__':
     world = BraitenbergWorld(sector = 5)
-    world.show_influence_map = True
+    #world.show_influence_map = True
     display = pyafai.Display(world)
-    display.show_fps = True
+    #display.show_fps = True
     v = Vehicle(250,100)
     v.body.angle = 90
     world.add_agent(v)
