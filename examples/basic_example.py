@@ -1,3 +1,20 @@
+#coding: utf-8
+#-----------------------------------------------------------------------------
+# Copyright (c) 2014 Tiago Baptista
+# All rights reserved.
+#-----------------------------------------------------------------------------
+
+"""
+Basic example of the use of the pyafai framework
+"""
+
+__docformat__ = 'restructuredtext'
+__author__ = 'Tiago Baptista'
+
+#Allow the import of the framework from one directory down the hierarchy
+import sys
+sys.path.insert(1,'..')
+
 import pyafai
 from pyafai import shapes
 from pyafai import objects
