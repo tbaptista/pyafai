@@ -4,7 +4,9 @@
 # All rights reserved.
 #-----------------------------------------------------------------------------
 
-'''This module contains helper classes to draw basic shapes in pyglet'''
+"""This module contains helper classes to draw basic shapes in pyglet"""
+
+from __future__ import division
 
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
@@ -13,17 +15,33 @@ import pyglet
 import math
 from math import pi
 
-class Shape:
+class Shape(object):
     def __init__(self, color=('c3B', (255,255,255))):
         self.gl_type = None
         self.vertices = None
         self.color = color
         self.vertexlist = None
 
+    def __del__(self):
+        if self.vertexlist != None:
+            self.vertexlist.delete()
+
+    def add_to_batch(self, batch):
+        if self.vertexlist == None:
+            n = len(self.vertices[1]) // 2
+            self.vertexlist = batch.add(n, self.gl_type, None, self.vertices,
+                                        (self.color[0], self.color[1] * n))
+            return self.vertexlist
+        else:
+            print("This shape was already added to a Batch, please do not \
+                    reuse.")
+
     def translate(self, tx, ty):
-        res = [(v[0] + tx, v[1] + ty) for v in zip(self.vertices[1][::2], self.vertices[1][1::2])]
+        res = [(v[0] + tx, v[1] + ty) for v in zip(self.vertices[1][::2],
+                                                   self.vertices[1][1::2])]
         res = [x for v in res for x in v]
         return res
+
 
     
 class Rect(Shape):

@@ -4,8 +4,10 @@
 # All rights reserved.
 #-----------------------------------------------------------------------------
 
-'''This module contains the implementation of influence maps, used to
-provide sensory fields (e.g. for light or sound)'''
+"""This module contains the implementation of influence maps, used to
+provide sensory fields (e.g. for light or sound)"""
+
+from __future__ import division
 
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
@@ -14,8 +16,8 @@ import math
 from . import shapes
 import pyglet
 
-class Influence:
-    '''The abstract base class for influences to place in the influence map'''
+class Influence(object):
+    """The abstract base class for influences to place in the influence map"""
     
     def update(self, delta):
         pass
@@ -25,7 +27,7 @@ class Influence:
     
     
 class CircularInfluence(Influence):
-    '''A circular influence emitter to place in the influence map'''
+    """A circular influence emitter to place in the influence map"""
     
     def __init__(self, x, y, strength = 1.0, diffuse = 0.01, degrade = 0.0):
         self.x = x
@@ -50,7 +52,8 @@ class CircularInfluence(Influence):
         else:
             return res
 
-class InfluenceMap:
+
+class InfluenceMap(object):
     '''A 2D influence map.
     
     TODO: Verify that the total size is divisible by the sector size.
@@ -107,7 +110,7 @@ class InfluenceMap:
         self.dirty = True
             
 
-class InfluenceMapDisplay:
+class InfluenceMapDisplay(object):
     '''This class is used to display the influence map on a 2D world'''
 
     def __init__(self, imap, color = ('c3B', (255,0,0))):
@@ -115,7 +118,8 @@ class InfluenceMapDisplay:
         self.imap = imap
         self.color = color
         self.vlists = []
-        shape = shapes.Rect(imap.sector, imap.sector, imap.sector/2, imap.sector/2, color)
+        shape = shapes.Rect(imap.sector, imap.sector,
+                            imap.sector/2, imap.sector/2, color)
         n = len(shape.vertices[1]) // 2
         t = imap.sector
 
@@ -134,14 +138,12 @@ class InfluenceMapDisplay:
 
                 #create shape in batch and save to list
                 new_vertices = shape.translate(x*imap.sector, y*imap.sector)
-                vlist = self.batch.add(n, shape.gl_type, None, ('v2f', new_vertices), (new_color[0], new_color[1]*n))
+                vlist = self.batch.add(n, shape.gl_type, None,
+                                       ('v2f', new_vertices),
+                                       (new_color[0], new_color[1]*n))
                 self.vlists[y].append(vlist)
 
-                #translate shape
-                shape.translate(t, 0)
 
-            #translate shape
-            shape.translate(-t * imap.map_width, t)
 
         imap.dirty = False
 

@@ -29,7 +29,7 @@ if __name__ == '__main__':
     world.add_object(obj)
 
     obj2 = objects.SimplePhysicsObject(150,150)
-    shape = shapes.Triangle(0, -10, 20, 0, 0, 10)
+    shape = shapes.Triangle(0, -10, 20, 0, 0, 10, color=('c3B', (200,0,0)))
     obj2.add_shape(shape)
     world.add_object(obj2)
     obj2.ang_velocity = 45

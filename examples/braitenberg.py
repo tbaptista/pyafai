@@ -21,6 +21,7 @@ from pyafai import influence
 from pyafai import shapes
 from pyafai import objects
 import math
+import pyglet.window.key as key
 
 RAD2DEG = 180.0 / math.pi
 DEG2RAD = math.pi / 180
@@ -133,22 +134,35 @@ class BraitenbergWorld(pyafai.World2D):
 
     def get_light(self, x, y):
         return self._imap.get_value(x, y)
+
+
+class BraitenbergDisplay(pyafai.Display):
+
+    def on_key_press(self, symbol, modifiers):
+        super(BraitenbergDisplay, self).on_key_press(symbol, modifiers)
+
+        if symbol == key.I:
+            world.show_influence_map = not(world.show_influence_map)
+
         
 
 
 if __name__ == '__main__':
-    world = BraitenbergWorld(sector = 5)
-    #world.show_influence_map = True
-    display = pyafai.Display(world)
-    #display.show_fps = True
+    world = BraitenbergWorld(sector = 10)
+    display = BraitenbergDisplay(world)
+
     v = Vehicle(250,100)
     v.body.angle = 90
     world.add_agent(v)
+
     l = LightSource(260,200, diffuse=0.004)
     world.add_light(l)
+
     #l = LightSource(300,300, diffuse=0.01)
     #world.add_light(l)
+
     #l = LightSource(150,300, diffuse=0.01)
     #world.add_light(l)
+
     pyafai.run()
 

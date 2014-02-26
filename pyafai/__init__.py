@@ -8,21 +8,22 @@
 An agent framework for the Introduction to Artificial Intelligence course.
 """
 
+from __future__ import division
+
 __docformat__ = 'restructuredtext'
-__version__ = '1.0b'
+__version__ = '1.0b2'
 __author__ = 'Tiago Baptista'
 
 #Try to import the pyglet package
 try:
     import pyglet
-except:
+    import pyglet.window.key as key
+except ImportError:
     print("Please install the pyglet package!")
     exit(1)
-    
-from . import shapes
-    
-    
-class Object:
+
+
+class Object(object):
     """This class represents a generic object in the world"""
     
     def __init__(self, x = 0, y = 0, angle = 0.0):
@@ -33,10 +34,9 @@ class Object:
         self._shapes = []
         
     def add_shape(self, shape):
-        n = len(shape.vertices[1]) // 2
-        shape.vertexlist = self._batch.add(n, shape.gl_type, None, shape.vertices,
-                                     (shape.color[0], shape.color[1] * n))
+        shape.add_to_batch(self._batch)
         self._shapes.append(shape)
+
         
     def draw(self):
         pyglet.gl.glPushMatrix()
@@ -67,8 +67,13 @@ class Object:
     def update(self, delta):
         pass
 
+    def check_point(self, x, y):
+        #Not yet implemented
+        return False
 
-class Agent:
+
+
+class Agent(object):
     """This Class represents an agent in the world"""
     def __init__(self):
         self.body = None
@@ -93,9 +98,9 @@ class Agent:
             p.update(self)
     
     def _think(self):
-        pass
+        return []
 
-class Perception:
+class Perception(object):
     """A generic perception class."""
 
     def __init__(self, type = int, name = "None"):
@@ -109,7 +114,7 @@ class Perception:
     def __str__(self):
         return self.name
 
-class World:
+class World(object):
     """The environment where to put our agents and objects"""
     def __init__(self):
         self.batch = pyglet.graphics.Batch()
@@ -128,12 +133,12 @@ class World:
             self._objects.append(agent.body)
         
     def update(self, delta):
+        #process agents
+        self.process_agents(delta)
+
         #update all objects
         for obj in self._objects:
             obj.update(delta)
-
-        #process agents
-        self.process_agents(delta)
 
     def process_agents(self, delta):
         for a in self._agents:
@@ -147,15 +152,46 @@ class World:
     def draw_objects(self):
         for obj in self._objects:
             obj.draw()
+
+    def get_object_at(self, x, y):
+        """Return the first object found at the position x, y, if any.
+
+        :param x: The x position
+        :param y: The y position
+        """
+
+        for obj in self._objects:
+            if obj.check_point(x, y):
+                return obj
+
+        return None
             
 
 class World2D(World):
-    """A 2D continuous world"""
+    """A 2D continuous and closed world"""
     
     def __init__(self, width=500, height=500):
         World.__init__(self)
         self.width = width
         self.height = height
+
+    def update(self, delta):
+        #process agents
+        self.process_agents(delta)
+
+        #update all objects
+        for obj in self._objects:
+            obj.update(delta)
+
+            #check bounds
+            if obj.x > self.width:
+                obj.x = self.width
+            if obj.y > self.height:
+                obj.y = self.height
+            if obj.x < 0:
+                obj.x = 0
+            if obj.y < 0:
+                obj.y = 0
         
         
 class World2DGrid(World):
@@ -170,21 +206,29 @@ class World2DGrid(World):
 
 
 class Display(pyglet.window.Window):
-    '''Class used to display the world'''
-    def __init__(self, world):
-        #Init the pyglet super class
-        super(Display, self).__init__(500, 500, caption = 'IIA')
+    """Class used to display the world"""
 
-        #Set wait for vertical sync to True
-        self.set_vsync(True)
+    def __init__(self, world):
+        #Enable multismapling if available on the hardware
+        platform = pyglet.window.get_platform()
+        display = platform.get_default_display()
+        screen = display.get_default_screen()
+        template = pyglet.gl.Config(sample_buffers=1, samples=4,
+                                    double_buffer=True)
+        try:
+            config = screen.get_best_config(template)
+        except pyglet.window.NoSuchConfigException:
+            template = pyglet.gl.Config()
+            config = screen.get_best_config(template)
+
+        #Init the pyglet super class
+        super(Display, self).__init__(500, 500, caption = 'IIA', config=config)
         
         self.show_fps = False
         self.fps_display = pyglet.clock.ClockDisplay()
 
         self.world = world
-        
-        
-    #Events
+
     def on_draw(self):
         #clear window
         self.clear()
@@ -198,7 +242,18 @@ class Display(pyglet.window.Window):
         #show fps
         if self.show_fps:
             self.fps_display.draw()
-            
+
+
+    def on_key_press(self, symbol, modifiers):
+        super(Display, self).on_key_press(symbol, modifiers)
+
+        if symbol == key.F:
+            self.show_fps = not(self.show_fps)
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        pass
+
+
             
 def run():
     pyglet.app.run()

@@ -7,6 +7,8 @@
 """This module contains implementations of some specific objects for use in
 simulations."""
 
+from __future__ import division
+
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
 
