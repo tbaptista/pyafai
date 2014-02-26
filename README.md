@@ -13,9 +13,13 @@ Dependencies
 - Python 3 (should also work on Python 2.7) [http://www.python.org]
 - pyglet [http://www.pyglet.org]
 
-Authors / Contributors
-----------------------
+Authors
+-------
 Tiago Baptista
+
+Other Contributors
+------------------
 Ernesto Costa
 Alexandre Pinto
+
 
