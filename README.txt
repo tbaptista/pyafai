@@ -10,16 +10,16 @@ All rights reserved.
 
 Dependencies
 ------------
-- [Python 3](http://www.python.org) (should also work on Python 2.7)
-- [pyglet](http://www.pyglet.org) (tested on version 1.2alpha1)
+- Python 3 (http://www.python.org) (should also work on Python 2.7)
+- pyglet (http://www.pyglet.org) (tested on version 1.2alpha1)
 
 Authors
 -------
-Tiago Baptista
+|Tiago Baptista
 
 Other Contributors
 ------------------
-Ernesto Costa  
-Alexandre Pinto
+|Ernesto Costa
+|Alexandre Pinto
 
 
