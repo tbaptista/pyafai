@@ -9,5 +9,5 @@ setup(
     author_email='baptista@dei.uc.pt',
     packages=['pyafai'],
     license='LICENSE.txt',
-    long_description=open('README.txt').read(),
+    long_description=open('README.rst').read(),
 )
