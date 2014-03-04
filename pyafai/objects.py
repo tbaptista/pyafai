@@ -54,6 +54,12 @@ class SimplePhysicsObject(Object):
 
     @Object.angle.setter
     def angle(self, value):
+        #normalize
+        while value > 360:
+            value -= 360
+        while value < 0:
+            value += 360
+
         self._angle = value
         self.velocity = self._vel
 

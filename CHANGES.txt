@@ -1,11 +1,12 @@
-1.0b2
+v1.0b3, DATE
+
+
+v1.0b2, 2014-02-26
     * [basic_example] change color of one object.
-    * [braitenberg] add display class to handle keyboard
     * pyafai os now compatible with Python 2. Tested only on Python 2.7.
     * Make the World2D be closed (agents are confined to the world size).
     * Enable OpenGL multisampling when available in the hardware.
     * Add methods to Display class to catch keyboard and mouse events.
     * Circle shape can now be created with a specified center.
 
-1.0b1
-    * First release.
+v1.0b1, 2014-02-24 -- Initial release.

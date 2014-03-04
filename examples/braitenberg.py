@@ -28,10 +28,10 @@ DEG2RAD = math.pi / 180
 
 
 class LightSource(pyafai.Object):
-    def __init__(self, x, y, diffuse=0.004):
+    def __init__(self, x, y, radius=100):
         super(LightSource, self).__init__(x, y)
         
-        self.inf = influence.CircularInfluence(x, y, diffuse = diffuse)
+        self.inf = influence.CircularInfluence(x, y, radius = radius)
         
         self.add_shape(shapes.Circle(4, color=('c3B', (210,210,0))))
 
@@ -114,8 +114,7 @@ class Vehicle(pyafai.Agent):
 class BraitenbergWorld(pyafai.World2D):
     def __init__(self, width=500, height=500, sector=10):
         super(BraitenbergWorld, self).__init__(width, height)
-        
-        #make influence map bigger than world by 100 pixels all around
+
         self._imap = influence.InfluenceMap(width, height, sector)
         self._imap_display = influence.InfluenceMapDisplay(self._imap, color=('c3B', (200,200,0)))
         self.show_influence_map = False
@@ -123,6 +122,7 @@ class BraitenbergWorld(pyafai.World2D):
     def add_light(self, light):
         self._imap.place(light.inf)
         self.add_object(light)
+        self._imap_display.update()
 
     def draw(self):
         super(BraitenbergWorld, self).draw()
@@ -155,13 +155,13 @@ if __name__ == '__main__':
     v.body.angle = 90
     world.add_agent(v)
 
-    l = LightSource(260,200, diffuse=0.004)
+    l = LightSource(265,205, radius=100)
     world.add_light(l)
 
-    #l = LightSource(300,300, diffuse=0.01)
+    #l = LightSource(300,300, radius=50)
     #world.add_light(l)
 
-    #l = LightSource(150,300, diffuse=0.01)
+    #l = LightSource(150,300, radius=50)
     #world.add_light(l)
 
     pyafai.run()

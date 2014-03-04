@@ -29,12 +29,24 @@ class Influence(object):
 class CircularInfluence(Influence):
     """A circular influence emitter to place in the influence map"""
     
-    def __init__(self, x, y, strength = 1.0, diffuse = 0.01, degrade = 0.0):
+    def __init__(self, x, y, strength = 1.0, radius = 100, degrade = 0.0,
+                 static = True):
         self.x = x
         self.y = y
         self.strength = strength
-        self.degrade = degrade
-        self.diffuse = diffuse
+        self.radius = radius
+        self.diffuse = 1/radius
+        self.static = static
+
+
+        if static and degrade != 0.0:
+            print("A static influence can not have a degrade value different \
+                  than 0! Value set to 0.")
+            self.degrade = 0.0
+        else:
+            self.degrade = degrade
+
+        CircularInfluence.func = CircularInfluence.light_diffuse
         
     def update(self, delta):
         if self.degrade != 0:
@@ -44,13 +56,15 @@ class CircularInfluence(Influence):
         return False
         
     def get_value(self, x, y):
-        #linear fall-off
+        return self.func(x, y)
+
+    def linear_diffuse(self, x, y):
         dist = math.sqrt((x - self.x)**2 + (y - self.y)**2)
-        res = self.strength - (self.diffuse * dist)
-        if res < 0:
-            return 0.0
-        else:
-            return res
+        return max(self.strength - (self.diffuse * dist), 0)
+
+    def light_diffuse(self, x, y):
+        dist = math.sqrt((x - self.x)**2 + (y - self.y)**2)
+        return self.strength / (dist/self.radius + 1)**2
 
 
 class InfluenceMap(object):
@@ -102,7 +116,7 @@ class InfluenceMap(object):
             for x in range(self.map_width):
                 a = 0
                 for i in self._ilist:
-                    a = a + i.get_value(x * self.sector, y*self.sector)
+                    a = a + i.get_value(x * self.sector + self.sector/2, y*self.sector + self.sector/2)
                 if a > self.maximum:
                     a = self.maximum
                 self._imap[y][x] = a

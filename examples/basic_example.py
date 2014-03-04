@@ -8,6 +8,8 @@
 Basic example of the use of the pyafai framework
 """
 
+from __future__ import division
+
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
 
@@ -20,7 +22,7 @@ from pyafai import shapes
 from pyafai import objects
 
 if __name__ == '__main__':
-    world = pyafai.World()
+    world = pyafai.World2D()
     display = pyafai.Display(world)
 
     obj = pyafai.Object(200,200)
@@ -32,7 +34,7 @@ if __name__ == '__main__':
     shape = shapes.Triangle(0, -10, 20, 0, 0, 10, color=('c3B', (200,0,0)))
     obj2.add_shape(shape)
     world.add_object(obj2)
-    obj2.ang_velocity = 45
+    obj2.ang_velocity = 60
     obj2.velocity = 100
 
     pyafai.run()
