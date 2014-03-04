@@ -15,11 +15,12 @@ Dependencies
 
 Authors
 -------
-|Tiago Baptista
+| Tiago Baptista
 
 Other Contributors
 ------------------
-|Ernesto Costa
-|Alexandre Pinto
+| Ernesto Costa
+| Alexandre Pinto
+
 
 
