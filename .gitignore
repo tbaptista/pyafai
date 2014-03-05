@@ -1,2 +1,4 @@
 pyafai/__pycache__
 *.pyc
+build
+dist

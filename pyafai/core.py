@@ -91,7 +91,7 @@ class Agent(object):
     
     def update(self, delta):
         self._update_perceptions()
-        actions = self._think()
+        actions = self._think(delta)
         for action in actions:
             self.action()
         
@@ -99,7 +99,7 @@ class Agent(object):
         for p in self._perceptions.values():
             p.update(self)
     
-    def _think(self):
+    def _think(self, delta):
         return []
 
 class Perception(object):
