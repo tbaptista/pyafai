@@ -94,7 +94,7 @@ class Vehicle(pyafai.Agent):
         self.add_perception(light_sensor)
         self.body.add_sensor(x, y)
 
-    def _think(self):
+    def _think(self, delta):
         #vehicle 2a
         #self.body.vel_wheels = (self._perceptions["left"].value, self._perceptions["right"].value)
 
