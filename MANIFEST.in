@@ -1,2 +1,2 @@
-include CHANGES.txt README.txt LICENSE.txt
+include CHANGES.txt README.rst LICENSE.txt
 include examples/basic_example.py

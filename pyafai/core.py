@@ -14,13 +14,8 @@ __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
 
 #Try to import the pyglet package
-try:
-    import pyglet
-    import pyglet.window.key as key
-except ImportError:
-    print("Please install the pyglet package!")
-    exit(1)
-
+import pyglet
+import pyglet.window.key as key
 
 class Object(object):
     """This class represents a generic object in the world"""
@@ -262,8 +257,3 @@ class Display(pyglet.window.Window):
 
     def on_mouse_release(self, x, y, button, modifiers):
         pass
-
-
-            
-def run():
-    pyglet.app.run()

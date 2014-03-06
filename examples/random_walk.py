@@ -38,8 +38,8 @@ class RandomWalker(pyafai.Agent):
         self._last_think += delta
         if self._last_think >= 0.2:
             self._last_think = 0
-            rotate = random.randint(-40,40)
-            self.body.rotate(rotate)
+            rotate = random.choice((-180,0,180))
+            self.body.ang_velocity = rotate
 
         return []
 

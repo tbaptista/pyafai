@@ -17,7 +17,6 @@ __author__ = 'Tiago Baptista'
 #Try to import the pyglet package
 try:
     import pyglet
-    import pyglet.window.key as key
 except ImportError:
     print("Please install the pyglet package!")
     exit(1)
