@@ -201,7 +201,7 @@ class World2D(World):
 class World2DGrid(World):
     """A 2D Grid world"""
     
-    def __init__(self, width=50, height=50, cell=10, tor=False):
+    def __init__(self, width=500, height=500, cell=10, tor=False):
         World.__init__(self)
         self.width = width
         self.height = height
@@ -226,8 +226,17 @@ class Display(pyglet.window.Window):
             template = pyglet.gl.Config()
             config = screen.get_best_config(template)
 
+        #get the width and height of the world
+        if hasattr(world, 'width') and hasattr(world, 'height'):
+            width = world.width
+            height = world.height
+        else:
+            width = 500
+            height = 500
+
         #Init the pyglet super class
-        super(Display, self).__init__(500, 500, caption = 'IIA', config=config)
+        super(Display, self).__init__(width, height, caption = 'IIA',
+                                      config=config)
         
         self.show_fps = False
         self.fps_display = pyglet.clock.ClockDisplay()

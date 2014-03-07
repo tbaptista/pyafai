@@ -5,8 +5,8 @@ pyafai is an agent framework created for the Introduction to Artificial
 Intelligence course at the Department of Informatics Engineering of the
 University of Coimbra.
 
-Copyright (c) 2014 Tiago Baptista - baptista@dei.uc.pt  
-All rights reserved.
+| Copyright (c) 2014 Tiago Baptista - baptista@dei.uc.pt
+| All rights reserved.
 
 Dependencies
 ------------
