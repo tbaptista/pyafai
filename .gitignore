@@ -3,3 +3,4 @@ pyafai/__pycache__
 build
 dist
 MANIFEST
+pyafai.egg-info

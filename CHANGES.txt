@@ -1,4 +1,8 @@
-v1.0b3, DATE
+v1.0b3, 2014-03-06
+    * Package can now be installed using distutils setup.py
+    * New core sub-module created. Core classes moved there.
+    * New diffuse functions available in Influence Map
+    * Object angle is now normalized to 0-360 degrees
 
 
 v1.0b2, 2014-02-26
