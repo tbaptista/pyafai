@@ -46,7 +46,7 @@ class CircularInfluence(Influence):
         else:
             self.degrade = degrade
 
-        CircularInfluence.func = CircularInfluence.light_diffuse
+        self.func = CircularInfluence.linear_diffuse
         
     def update(self, delta):
         if self.degrade != 0:
@@ -56,7 +56,7 @@ class CircularInfluence(Influence):
         return False
         
     def get_value(self, x, y):
-        return self.func(x, y)
+        return self.func(self, x, y)
 
     def linear_diffuse(self, x, y):
         dist = math.sqrt((x - self.x)**2 + (y - self.y)**2)

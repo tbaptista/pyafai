@@ -9,7 +9,7 @@ Braitenberg vehicles simulation using the iia framework.
 """
 
 __docformat__ = 'restructuredtext'
-__version__ = '1.0b'
+__version__ = '1.0'
 __author__ = 'Tiago Baptista'
 
 #Allow the import of the framework from one directory down the hierarchy
@@ -32,6 +32,7 @@ class LightSource(pyafai.Object):
         super(LightSource, self).__init__(x, y)
         
         self.inf = influence.CircularInfluence(x, y, radius = radius)
+        self.inf.func = influence.CircularInfluence.light_diffuse
         
         self.add_shape(shapes.Circle(4, color=('c3B', (210,210,0))))
 
@@ -62,7 +63,7 @@ class VehicleBody(objects.SimplePhysicsObject):
         self._axle = 10
         self._vel_wheelL = 0.0
         self._vel_wheelR = 0.0
-        self._vel_max = 50.0
+        self._vel_max = 100.0
 
     @property
     def vel_wheels(self):
@@ -78,7 +79,7 @@ class VehicleBody(objects.SimplePhysicsObject):
         self.ang_velocity = (self._vel_wheelR - self._vel_wheelL) / self._axle * RAD2DEG
 
     def add_sensor(self, x, y):
-        pass
+        self.add_shape(shapes.Circle(3, x, y, color=('c3B',(255,0,0))))
 
 
         
@@ -148,7 +149,7 @@ class BraitenbergDisplay(pyafai.Display):
 
 
 if __name__ == '__main__':
-    world = BraitenbergWorld(sector = 10)
+    world = BraitenbergWorld(sector = 5)
     display = BraitenbergDisplay(world)
 
     v = Vehicle(250,100)
