@@ -1,3 +1,7 @@
+v1.0b4, 2014-03-10
+    * The influence diffuse function can now be changed on a per instance basis.
+    * The window size will now follow the settings for the world size.
+
 v1.0b3, 2014-03-06
     * Package can now be installed using distutils setup.py
     * New core sub-module created. Core classes moved there.
