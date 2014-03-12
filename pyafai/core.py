@@ -117,6 +117,7 @@ class World(object):
         self._batch = pyglet.graphics.Batch()
         self._agents = []
         self._objects = []
+        self.paused = False
         pyglet.clock.schedule_interval(self.update, 1/60.0)
 
     
@@ -137,14 +138,19 @@ class World(object):
             print("Trying to add an agent to the world that is not of type\
                   Agent!")
 
-        
-    def update(self, delta):
-        #process agents
-        self.process_agents(delta)
+    def pause_toggle(self):
+        self.paused = not self.paused
 
-        #update all objects
-        for obj in self._objects:
-            obj.update(delta)
+
+    def update(self, delta):
+        if not self.paused:
+            print (self.paused)
+            #process agents
+            self.process_agents(delta)
+
+            #update all objects
+            for obj in self._objects:
+                obj.update(delta)
 
     def process_agents(self, delta):
         for a in self._agents:
@@ -180,22 +186,23 @@ class World2D(World):
         self.height = height
 
     def update(self, delta):
-        #process agents
-        self.process_agents(delta)
+        if not self.paused:
+            #process agents
+            self.process_agents(delta)
 
-        #update all objects
-        for obj in self._objects:
-            obj.update(delta)
+            #update all objects
+            for obj in self._objects:
+                obj.update(delta)
 
-            #check bounds
-            if obj.x > self.width:
-                obj.x = self.width
-            if obj.y > self.height:
-                obj.y = self.height
-            if obj.x < 0:
-                obj.x = 0
-            if obj.y < 0:
-                obj.y = 0
+                #check bounds
+                if obj.x > self.width:
+                    obj.x = self.width
+                if obj.y > self.height:
+                    obj.y = self.height
+                if obj.x < 0:
+                    obj.x = 0
+                if obj.y < 0:
+                    obj.y = 0
         
         
 class World2DGrid(World):
@@ -263,6 +270,12 @@ class Display(pyglet.window.Window):
 
         if symbol == key.F:
             self.show_fps = not(self.show_fps)
+        elif symbol == key.P:
+            self.world.pause_toggle()
+            if self.world.paused:
+                self.set_caption(self.caption + " (paused)")
+            else:
+                self.set_caption(self.caption.replace(" (paused)", ""))
 
     def on_mouse_release(self, x, y, button, modifiers):
         pass

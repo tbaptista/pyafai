@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='pyafai',
-    version='1.0b4',
+    version='1.0b5',
     description='Python Agent Framework for Artificial Intelligence',
     url='none',
     author='Tiago Baptista',
