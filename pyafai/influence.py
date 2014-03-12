@@ -16,6 +16,7 @@ import math
 from . import shapes
 import pyglet
 
+
 class Influence(object):
     """The abstract base class for influences to place in the influence map"""
     
@@ -125,7 +126,7 @@ class InfluenceMap(object):
             
 
 class InfluenceMapDisplay(object):
-    '''This class is used to display the influence map on a 2D world'''
+    """This class is used to display the influence map on a 2D world"""
 
     def __init__(self, imap, color = ('c3B', (255,0,0))):
         self.batch = pyglet.graphics.Batch()
@@ -177,3 +178,5 @@ class InfluenceMapDisplay(object):
 
             self.imap.dirty = False
 
+    def draw(self):
+        self.batch.draw()
