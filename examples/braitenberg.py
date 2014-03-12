@@ -22,6 +22,7 @@ from pyafai import shapes
 from pyafai import objects
 import math
 import pyglet.window.key as key
+import random
 
 RAD2DEG = 180.0 / math.pi
 DEG2RAD = math.pi / 180
@@ -79,7 +80,7 @@ class VehicleBody(objects.SimplePhysicsObject):
         self.ang_velocity = (self._vel_wheelR - self._vel_wheelL) / self._axle * RAD2DEG
 
     def add_sensor(self, x, y):
-        self.add_shape(shapes.Circle(3, x, y, color=('c3B',(255,0,0))))
+        self.add_shape(shapes.Triangle(x,y,x+3,y-2,x+3,y+2, color=('c3B',(220,0,0))))
 
 
         
@@ -96,20 +97,35 @@ class Vehicle(pyafai.Agent):
         self.body.add_sensor(x, y)
 
     def _think(self, delta):
-        #vehicle 2a
-        #self.body.vel_wheels = (self._perceptions["left"].value, self._perceptions["right"].value)
-
-        #vehicle 2b
-        self.body.vel_wheels = (self._perceptions["right"].value, self._perceptions["left"].value)
-
-        #vehicle 3a
-        #self.body.vel_wheels = (1-self._perceptions["left"].value, 1-self._perceptions["right"].value)
-
-        #vehicle 3b
-        #self.body.vel_wheels = (1-self._perceptions["right"].value, 1-self._perceptions["left"].value)
         return []
 
-        
+
+class Vehicle2a(Vehicle):
+    def _think(self, delta):
+        self.body.vel_wheels = (self._perceptions["left"].value, self._perceptions["right"].value)
+        return []
+
+
+class Vehicle2b(Vehicle):
+    def _think(self, delta):
+        self.body.vel_wheels = (self._perceptions["right"].value, self._perceptions["left"].value)
+        return []
+
+
+class Vehicle3a(Vehicle):
+    def _think(self, delta):
+        self.body.vel_wheels = (1-self._perceptions["left"].value, 1-self._perceptions["right"].value)
+        return []
+
+
+class Vehicle3b(Vehicle):
+    def _think(self, delta):
+        self.body.vel_wheels = (1-self._perceptions["right"].value, 1-self._perceptions["left"].value)
+        return []
+
+class MyVehicle1(Vehicle):
+    def _think(self, delta):
+       self.body.vel_wheels = (self._perceptions["right"].value, 1-self._perceptions["left"].value)
 
 
 class BraitenbergWorld(pyafai.World2D):
@@ -125,12 +141,17 @@ class BraitenbergWorld(pyafai.World2D):
         self.add_object(light)
         self._imap_display.update()
 
+
+    def update(self, delta):
+        super(BraitenbergWorld, self).update(delta)
+
+        self._imap_display.update()
+
     def draw(self):
         super(BraitenbergWorld, self).draw()
 
         if self.show_influence_map:
-            self._imap_display.update()
-            self._imap_display.batch.draw()
+            self._imap_display.draw()
 
 
     def get_light(self, x, y):
@@ -143,27 +164,29 @@ class BraitenbergDisplay(pyafai.Display):
         super(BraitenbergDisplay, self).on_key_press(symbol, modifiers)
 
         if symbol == key.I:
-            world.show_influence_map = not(world.show_influence_map)
+            self.world.show_influence_map = not(self.world.show_influence_map)
 
         
 
-
-if __name__ == '__main__':
-    world = BraitenbergWorld(sector = 5)
+def main():
+    world = BraitenbergWorld(800,600,sector = 10)
     display = BraitenbergDisplay(world)
 
-    v = Vehicle(250,100)
-    v.body.angle = 90
-    world.add_agent(v)
 
-    l = LightSource(265,205, radius=100)
-    world.add_light(l)
+    for i in range(5):
+        v = Vehicle2b(random.randint(50, world.width - 50),
+                      random.randint(50, world.height - 50))
+        v.body.angle = random.randint(0,360)
+        world.add_agent(v)
 
-    #l = LightSource(300,300, radius=50)
-    #world.add_light(l)
-
-    #l = LightSource(150,300, radius=50)
-    #world.add_light(l)
+    for i in range(10):
+        l = LightSource(random.randint(50, world.width - 50),
+                        random.randint(50, world.height - 50),
+                        30)
+        world.add_light(l)
 
     pyafai.run()
+
+if __name__ == '__main__':
+    main()
 
