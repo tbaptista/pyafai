@@ -31,13 +31,15 @@ class CircularInfluence(Influence):
     """A circular influence emitter to place in the influence map"""
     
     def __init__(self, x, y, strength = 1.0, radius = 100, degrade = 0.0,
-                 static = True):
+                 limit = 0.001, static = True):
         self.x = x
         self.y = y
         self.strength = strength
         self.radius = radius
+        self.r = radius/3
         self.diffuse = 1/radius
         self.static = static
+        self.limit = limit
 
 
         if static and degrade != 0.0:
@@ -50,8 +52,10 @@ class CircularInfluence(Influence):
         self.func = CircularInfluence.linear_diffuse
         
     def update(self, delta):
-        if self.degrade != 0:
+        if self.degrade != 0 and self.strength > 0:
             self.strength -=  self.degrade * delta
+            if self.strength < self.limit:
+                self.strength = 0
             return True
 
         return False
@@ -65,14 +69,18 @@ class CircularInfluence(Influence):
 
     def light_diffuse(self, x, y):
         dist = math.sqrt((x - self.x)**2 + (y - self.y)**2)
-        return self.strength / (dist/self.radius + 1)**2
+        att = 1 / ((dist/self.r + 1)**2)
+        res = self.strength * att
+        if res < self.limit:
+            return 0
+        return res
 
 
 class InfluenceMap(object):
-    '''A 2D influence map.
+    """A 2D influence map.
     
     TODO: Verify that the total size is divisible by the sector size.
-    '''
+    """
     
     def __init__(self, width, height, sector, maximum = 1.0):
         self.width = width
@@ -86,10 +94,11 @@ class InfluenceMap(object):
         self._imap = [self.map_width * [0.0] for i in range(self.map_height)]
         self._ilist = []
         
-    def place(self, influence):
+    def place(self, influence, update=True):
         if 0 <influence.x < self.width and 0 < influence.y < self.height:
             self._ilist.append(influence)
-            self.update()
+            if update:
+                self.update()
         else:
             print("Tying to place an influence outside the limits of the map")
 
@@ -117,7 +126,8 @@ class InfluenceMap(object):
             for x in range(self.map_width):
                 a = 0
                 for i in self._ilist:
-                    a = a + i.get_value(x * self.sector + self.sector/2, y*self.sector + self.sector/2)
+                    a = a + i.get_value(x * self.sector + self.sector/2,
+                                        y*self.sector + self.sector/2)
                 if a > self.maximum:
                     a = self.maximum
                 self._imap[y][x] = a

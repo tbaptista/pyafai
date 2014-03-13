@@ -32,7 +32,8 @@ class LightSource(pyafai.Object):
     def __init__(self, x, y, radius=100):
         super(LightSource, self).__init__(x, y)
         
-        self.inf = influence.CircularInfluence(x, y, radius = radius)
+        self.inf = influence.CircularInfluence(x, y, radius = radius,
+                                               limit = 0.001)
         self.inf.func = influence.CircularInfluence.light_diffuse
         
         self.add_shape(shapes.Circle(4, color=('c3B', (210,210,0))))
@@ -125,7 +126,8 @@ class Vehicle3b(Vehicle):
 
 class MyVehicle1(Vehicle):
     def _think(self, delta):
-       self.body.vel_wheels = (self._perceptions["right"].value, 1-self._perceptions["left"].value)
+        self.body.vel_wheels = (self._perceptions["right"].value, 1-self._perceptions["left"].value)
+        return []
 
 
 class BraitenbergWorld(pyafai.World2D):
@@ -136,10 +138,11 @@ class BraitenbergWorld(pyafai.World2D):
         self._imap_display = influence.InfluenceMapDisplay(self._imap, color=('c3B', (200,200,0)))
         self.show_influence_map = False
         
-    def add_light(self, light):
-        self._imap.place(light.inf)
+    def add_light(self, light, update=True):
+        self._imap.place(light.inf, update)
         self.add_object(light)
-        self._imap_display.update()
+        if update:
+            self._imap_display.update()
 
 
     def update(self, delta):
@@ -169,21 +172,24 @@ class BraitenbergDisplay(pyafai.Display):
         
 
 def main():
-    world = BraitenbergWorld(800,600,sector = 10)
+    world = BraitenbergWorld(500,500,sector = 5)
     display = BraitenbergDisplay(world)
 
 
     for i in range(5):
-        v = Vehicle2b(random.randint(50, world.width - 50),
-                      random.randint(50, world.height - 50))
+        v = MyVehicle1(random.randint(100, world.width - 100),
+                      random.randint(100, world.height - 100))
         v.body.angle = random.randint(0,360)
         world.add_agent(v)
 
     for i in range(10):
         l = LightSource(random.randint(50, world.width - 50),
                         random.randint(50, world.height - 50),
-                        30)
-        world.add_light(l)
+                        100)
+        if (i<9):
+            world.add_light(l, False)
+        else:
+            world.add_light(l, True)
 
     pyafai.run()
 
