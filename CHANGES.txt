@@ -1,3 +1,8 @@
+v1.0b5, 2014-03-13
+    * The simulator can now be paused (P key)
+    * Add a draw method to InfluenceMapDisplay
+    * The light diffuse function in CircularInfluence now has a minimum value
+
 v1.0b4, 2014-03-10
     * The influence diffuse function can now be changed on a per instance basis.
     * The window size will now follow the settings for the world size.
