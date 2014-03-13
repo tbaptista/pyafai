@@ -95,7 +95,7 @@ class InfluenceMap(object):
         self._ilist = []
         
     def place(self, influence, update=True):
-        if 0 <influence.x < self.width and 0 < influence.y < self.height:
+        if 0 <= influence.x <= self.width and 0 <= influence.y <= self.height:
             self._ilist.append(influence)
             if update:
                 self.update()
