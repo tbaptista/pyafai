@@ -144,7 +144,6 @@ class World(object):
 
     def update(self, delta):
         if not self.paused:
-            print (self.paused)
             #process agents
             self.process_agents(delta)
 
