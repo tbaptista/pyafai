@@ -57,12 +57,17 @@ class VehicleBody(objects.SimplePhysicsObject):
     def __init__(self, x, y):
         super(VehicleBody, self).__init__(x, y)
         
-        #the body shapes
-        self.add_shape(shapes.Rect(20, 10))
-        self.add_shape(shapes.Rect(6, 4, -10, -5))
-        self.add_shape(shapes.Rect(6, 4, -10, 5))
+        self.width = 20
+        self.height = 10
 
-        self._axle = 10
+        #the body shapes
+        self.add_shape(shapes.Rect(self.width, self.height))
+        self.add_shape(shapes.Rect(self.width * 0.3, self.height* 0.4,
+                                   -self.width/2, -self.height/2))
+        self.add_shape(shapes.Rect(self.width * 0.3, self.height* 0.4,
+                                   -self.width/2, self.height/2))
+
+        self._axle = self.height
         self._vel_wheelL = 0.0
         self._vel_wheelR = 0.0
         self._vel_max = 100.0
@@ -81,7 +86,8 @@ class VehicleBody(objects.SimplePhysicsObject):
         self.ang_velocity = (self._vel_wheelR - self._vel_wheelL) / self._axle * RAD2DEG
 
     def add_sensor(self, x, y):
-        self.add_shape(shapes.Triangle(x,y,x+3,y-2,x+3,y+2, color=('c3B',(220,0,0))))
+        self.add_shape(shapes.Triangle(x,y,x+3,y-2,x+3,y+2,
+                                       color=('c3B',(220,0,0))))
 
 
         
@@ -89,8 +95,8 @@ class Vehicle(pyafai.Agent):
     def __init__(self, x, y):
         super(Vehicle, self).__init__()
         self.body = VehicleBody(x, y)
-        self.add_light_sensor(10,5, "left")
-        self.add_light_sensor(10,-5, "right")
+        self.add_light_sensor(self.body.width/2, self.body.height/2, "left")
+        self.add_light_sensor(self.body.width/2, -self.body.height/2, "right")
 
     def add_light_sensor(self, x, y, name):
         light_sensor = Sensor(x, y, name)
@@ -125,6 +131,17 @@ class Vehicle3b(Vehicle):
         return []
 
 class MyVehicle1(Vehicle):
+    def _think(self, delta):
+        self.body.vel_wheels = (self._perceptions["right"].value, 1-self._perceptions["left"].value)
+        return []
+
+class MyVehicle2(Vehicle):
+    def __init__(self, x, y):
+        super(Vehicle, self).__init__()
+        self.body = VehicleBody(x, y)
+        self.add_light_sensor(0,7, "left")
+        self.add_light_sensor(0,-7, "right")
+
     def _think(self, delta):
         self.body.vel_wheels = (self._perceptions["right"].value, 1-self._perceptions["left"].value)
         return []

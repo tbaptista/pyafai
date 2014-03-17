@@ -94,5 +94,16 @@ class Circle(Shape):
         self.vertices = ('v2f', vertices)
         vertices = self.translate(cx, cy)
         self.vertices = ('v2f', vertices)
+
+class Sprite(Shape):
+    def __init__(self, filename, cx=0, cy=0):
+        Shape.__init__(self)
+        image = pyglet.image.load(filename)
+        image.anchor_x = image.width // 2
+        image.anchor_y = image.height // 2
+        self._sprite = pyglet.sprite.Sprite(image, cx, cy)
+
+    def add_to_batch(self, batch):
+        self._sprite.batch = batch
             
         
