@@ -16,6 +16,7 @@ __author__ = 'Tiago Baptista'
 #Try to import the pyglet package
 import pyglet
 import pyglet.window.key as key
+from . import shapes
 
 class Object(object):
     """This class represents a generic object in the world"""
@@ -117,6 +118,7 @@ class World(object):
         self._batch = pyglet.graphics.Batch()
         self._agents = []
         self._objects = []
+        self._shapes = []
         self.paused = False
         pyglet.clock.schedule_interval(self.update, 1/60.0)
 
@@ -205,14 +207,58 @@ class World2D(World):
         
         
 class World2DGrid(World):
-    """A 2D Grid world"""
+    """A 2D Grid world, closed, and optionally toroidal"""
     
-    def __init__(self, width=500, height=500, cell=10, tor=False):
+    def __init__(self, width=25, height=25, cell=20, tor=False):
         World.__init__(self)
-        self.width = width
-        self.height = height
+        self._width = width
+        self._height = height
+        self.width = width * cell
+        self.height = height * cell
         self.cell = cell
-        self.tor = tor
+        self._half_cell = cell / 2
+        self._tor = tor
+
+        shape = shapes.Grid(width*cell, height*cell, cell)
+        shape.add_to_batch(self._batch)
+        self._shapes.append(shape)
+
+    def update(self, delta):
+            #process agents
+            self.process_agents(delta)
+
+            #update all objects
+            for obj in self._objects:
+                obj.update(delta)
+
+                #check bounds
+                if not self._tor:
+                    if obj.x > self._width-1:
+                        obj.x = self._width-1
+                    if obj.y > self._height-1:
+                        obj.y = self._height-1
+                    if obj.x < 0:
+                        obj.x = 0
+                    if obj.y < 0:
+                        obj.y = 0
+                else:
+                    if obj.x > self._width-1 or obj.x < 0:
+                        obj.x = obj.x % self._width
+                    if obj.y > self._height-1 or obj.y < 0:
+                        obj.y = obj.y % self._height
+
+
+
+    def draw_objects(self):
+        for obj in self._objects:
+            x = obj.x
+            y = obj.y
+            obj.x = x * self.cell + self._half_cell
+            obj.y = y * self.cell + self._half_cell
+            obj.draw()
+            obj.x = x
+            obj.y = y
+
         
 
 
@@ -253,10 +299,10 @@ class Display(pyglet.window.Window):
         #clear window
         self.clear()
         
-        #draw world to batch
+        #draw world
         self.world.draw()
         
-        #draw objects to batch
+        #draw objects
         self.world.draw_objects()
                 
         #show fps

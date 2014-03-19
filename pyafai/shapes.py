@@ -95,6 +95,30 @@ class Circle(Shape):
         vertices = self.translate(cx, cy)
         self.vertices = ('v2f', vertices)
 
+
+class Grid(Shape):
+    def __init__(self, width, height, cell, color = ('c3B', (200,200,200))):
+        Shape.__init__(self, color)
+
+        vertices = []
+        lines = width//cell + height // cell + 2
+        self.gl_type = pyglet.gl.GL_LINES
+
+        #vertical lines
+        for i in range(width//cell + 1):
+            vertices.extend([i*cell, 0, i*cell, height])
+
+        #horizontal lines
+        for i in range(height//cell + 1):
+            vertices.extend([0, i*cell, width, i*cell])
+
+        self.vertices = ('v2f', tuple(vertices))
+
+
+
+
+
+
 class Sprite(Shape):
     def __init__(self, filename, cx=0, cy=0):
         Shape.__init__(self)

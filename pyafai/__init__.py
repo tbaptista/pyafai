@@ -21,8 +21,12 @@ except ImportError:
     print("Please install the pyglet package!")
     exit(1)
 
-#import core
+#import sub-modules
 from .core import *
+from . import core
+from . import shapes
+from . import objects
+from . import shapes
 
             
 def run():
