@@ -12,8 +12,9 @@ from __future__ import division
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
 
-import math
+
 from . import shapes
+import math
 import pyglet
 
 

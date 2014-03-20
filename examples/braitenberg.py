@@ -22,6 +22,7 @@ from pyafai import shapes
 from pyafai import objects
 import math
 import pyglet.window.key as key
+import pyglet.window.mouse as mouse
 import random
 
 RAD2DEG = 180.0 / math.pi
@@ -90,7 +91,6 @@ class VehicleBody(objects.SimplePhysicsObject):
                                        color=('c3B',(220,0,0))))
 
 
-        
 class Vehicle(pyafai.Agent):
     def __init__(self, x, y):
         super(Vehicle, self).__init__()
@@ -130,10 +130,12 @@ class Vehicle3b(Vehicle):
         self.body.vel_wheels = (1-self._perceptions["right"].value, 1-self._perceptions["left"].value)
         return []
 
+
 class MyVehicle1(Vehicle):
     def _think(self, delta):
         self.body.vel_wheels = (self._perceptions["right"].value, 1-self._perceptions["left"].value)
         return []
+
 
 class MyVehicle2(Vehicle):
     def __init__(self, x, y):
@@ -186,6 +188,13 @@ class BraitenbergDisplay(pyafai.Display):
         if symbol == key.I:
             self.world.show_influence_map = not(self.world.show_influence_map)
 
+    def on_mouse_release(self, x, y, button, modifiers):
+        super(BraitenbergDisplay, self).on_mouse_release(x, y, button, modifiers)
+
+        if button == mouse.RIGHT:
+            light = LightSource(x, y)
+            self.world.add_light(light)
+
         
 
 def main():
@@ -199,7 +208,7 @@ def main():
         v.body.angle = random.randint(0,360)
         world.add_agent(v)
 
-    for i in range(10):
+    for i in range(1):
         l = LightSource(random.randint(50, world.width - 50),
                         random.randint(50, world.height - 50),
                         100)

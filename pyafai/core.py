@@ -259,24 +259,23 @@ class World2DGrid(World):
             obj.x = x
             obj.y = y
 
-        
-
 
 class Display(pyglet.window.Window):
     """Class used to display the world"""
 
-    def __init__(self, world):
-        #Enable multismapling if available on the hardware
-        platform = pyglet.window.get_platform()
-        display = platform.get_default_display()
-        screen = display.get_default_screen()
-        template = pyglet.gl.Config(sample_buffers=1, samples=4,
-                                    double_buffer=True)
-        try:
-            config = screen.get_best_config(template)
-        except pyglet.window.NoSuchConfigException:
-            template = pyglet.gl.Config()
-            config = screen.get_best_config(template)
+    def __init__(self, world, multisampling = True):
+        if multisampling:
+            #Enable multismapling if available on the hardware
+            platform = pyglet.window.get_platform()
+            display = platform.get_default_display()
+            screen = display.get_default_screen()
+            template = pyglet.gl.Config(sample_buffers=1, samples=4,
+                                        double_buffer=True)
+            try:
+                config = screen.get_best_config(template)
+            except pyglet.window.NoSuchConfigException:
+                template = pyglet.gl.Config()
+                config = screen.get_best_config(template)
 
         #get the width and height of the world
         if hasattr(world, 'width') and hasattr(world, 'height'):
@@ -286,10 +285,13 @@ class Display(pyglet.window.Window):
             width = 500
             height = 500
 
-        #Init the pyglet super class
-        super(Display, self).__init__(width, height, caption = 'IIA',
-                                      config=config)
-        
+        if multisampling:
+            #Init the pyglet super class
+            super(Display, self).__init__(width, height, caption = 'IIA',
+                                          config=config)
+        else:
+            super(Display, self).__init__(width, height, caption = 'IIA')
+
         self.show_fps = False
         self.fps_display = pyglet.clock.ClockDisplay()
 
@@ -308,7 +310,6 @@ class Display(pyglet.window.Window):
         #show fps
         if self.show_fps:
             self.fps_display.draw()
-
 
     def on_key_press(self, symbol, modifiers):
         super(Display, self).on_key_press(symbol, modifiers)
