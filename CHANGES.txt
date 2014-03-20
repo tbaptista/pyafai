@@ -1,3 +1,9 @@
+v1.0b6, 2014-03-20
+    * Fix the placement of influences at the edges of the map.
+    * New Sprite class to allow the use of images as the visual representation of objects.
+    * New world class (World2dGrid). A grid environment, closed, or optionally toroidal.
+    * New example on the usage of the grid world.
+
 v1.0b5, 2014-03-13
     * The simulator can now be paused (P key)
     * Add a draw method to InfluenceMapDisplay

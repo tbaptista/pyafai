@@ -1,2 +1,3 @@
 include CHANGES.txt README.rst LICENSE.txt
 include examples/basic_example.py
+include examples/grid_example.py
