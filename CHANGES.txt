@@ -1,3 +1,7 @@
+v1.0b7, 2014-03-31
+    * Allow to optionally disable multisampling to correct erros on some systems not able to use multisampling.
+    * New features added to the grid world.
+
 v1.0b6, 2014-03-20
     * Fix the placement of influences at the edges of the map.
     * New Sprite class to allow the use of images as the visual representation of objects.
