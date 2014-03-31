@@ -197,28 +197,27 @@ class BraitenbergDisplay(pyafai.Display):
 
         
 
-def main():
-    world = BraitenbergWorld(500,500,sector = 5)
+def setup_random(n_lights, n_vehicles, vehicle_type):
+    world = BraitenbergWorld(500, 500, sector = 5)
     display = BraitenbergDisplay(world)
 
-
-    for i in range(5):
-        v = MyVehicle1(random.randint(100, world.width - 100),
+    for i in range(n_vehicles):
+        v = vehicle_type(random.randint(100, world.width - 100),
                       random.randint(100, world.height - 100))
         v.body.angle = random.randint(0,360)
         world.add_agent(v)
 
-    for i in range(1):
+    for i in range(n_lights):
         l = LightSource(random.randint(50, world.width - 50),
                         random.randint(50, world.height - 50),
                         100)
-        if (i<9):
+        if (i < n_lights - 1):
             world.add_light(l, False)
         else:
             world.add_light(l, True)
 
-    pyafai.run()
 
 if __name__ == '__main__':
-    main()
+    setup_random(10, 5, MyVehicle1)
+    pyafai.run()
 

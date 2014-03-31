@@ -27,6 +27,11 @@ class Object(object):
         self._angle = angle
         self._batch = pyglet.graphics.Batch()
         self._shapes = []
+
+    def __repr__(self):
+        return str(type(self).__name__) + "(" + ",".join((str(self.x),
+                                                 str(self.y),
+                                                 str(self.angle))) + ")"
         
     def add_shape(self, shape):
         shape.add_to_batch(self._batch)
@@ -71,7 +76,6 @@ class Object(object):
     def check_point(self, x, y):
         #Not yet implemented
         return False
-
 
 
 class Agent(object):
@@ -135,7 +139,7 @@ class World(object):
             agent.world = self
             self._agents.append(agent)
             if agent.body != None:
-                self._objects.append(agent.body)
+                self.add_object(agent.body)
         else:
             print("Trying to add an agent to the world that is not of type\
                   Agent!")
@@ -208,6 +212,8 @@ class World2D(World):
         
 class World2DGrid(World):
     """A 2D Grid world, closed, and optionally toroidal"""
+
+    moore = ((-1,-1), (0,-1), (1,-1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1))
     
     def __init__(self, width=25, height=25, cell=20, tor=False):
         World.__init__(self)
@@ -218,10 +224,32 @@ class World2DGrid(World):
         self.cell = cell
         self._half_cell = cell / 2
         self._tor = tor
+        self._grid = [[[] for c in range(width)] for l in range(height)]
 
+        #visual grid
         shape = shapes.Grid(width*cell, height*cell, cell)
         shape.add_to_batch(self._batch)
         self._shapes.append(shape)
+
+    def add_object(self, obj):
+        #check bounds
+        if not self._tor:
+            if obj.x > self._width-1:
+                obj.x = self._width-1
+            if obj.y > self._height-1:
+                obj.y = self._height-1
+            if obj.x < 0:
+                obj.x = 0
+            if obj.y < 0:
+                obj.y = 0
+        else:
+            if obj.x > self._width-1 or obj.x < 0:
+                obj.x = obj.x % self._width
+            if obj.y > self._height-1 or obj.y < 0:
+                obj.y = obj.y % self._height
+
+        World.add_object(self, obj)
+        self._grid[obj.y][obj.x].append(obj)
 
     def update(self, delta):
             #process agents
@@ -247,8 +275,6 @@ class World2DGrid(World):
                     if obj.y > self._height-1 or obj.y < 0:
                         obj.y = obj.y % self._height
 
-
-
     def draw_objects(self):
         for obj in self._objects:
             x = obj.x
@@ -258,6 +284,20 @@ class World2DGrid(World):
             obj.draw()
             obj.x = x
             obj.y = y
+
+    def get_cell(self, x, y):
+        return (x // self.cell, y // self.cell)
+
+    def get_neighbours(self, x, y):
+        result = []
+        for dx,dy in World2DGrid.moore:
+            x1 = x + dx
+            y1 = y + dy
+            if 0 <= x1 < self._width and 0 <= y1 < self._height:
+                result.extend(self._grid[y1][x1])
+
+        return result
+
 
 
 class Display(pyglet.window.Window):
