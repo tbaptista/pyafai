@@ -92,8 +92,9 @@ class Agent(object):
     def update(self, delta):
         self._update_perceptions()
         actions = self._think(delta)
-        for action in actions:
-            self.action()
+        if actions:
+            for action in actions:
+                self.action()
         
     def _update_perceptions(self):
         for p in self._perceptions.values():
@@ -257,6 +258,9 @@ class World2DGrid(World):
 
             #update all objects
             for obj in self._objects:
+                #remove from _grid
+                #self._grid[obj.y][obj.x].remove(obj)
+
                 obj.update(delta)
 
                 #check bounds
@@ -275,6 +279,9 @@ class World2DGrid(World):
                     if obj.y > self._height-1 or obj.y < 0:
                         obj.y = obj.y % self._height
 
+                #re-add to _grid
+                #self._grid[obj.y][obj.x].append(obj)
+
     def draw_objects(self):
         for obj in self._objects:
             x = obj.x
@@ -285,8 +292,19 @@ class World2DGrid(World):
             obj.x = x
             obj.y = y
 
+    @property
+    def grid_width(self):
+        return self._width
+
+    @property
+    def grid_height(self):
+        return self._height
+
     def get_cell(self, x, y):
         return (x // self.cell, y // self.cell)
+
+    def get_cell_contents(self, x, y):
+        return self._grid[y][x]
 
     def get_neighbours(self, x, y):
         result = []
