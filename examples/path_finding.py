@@ -62,6 +62,15 @@ class Node(object):
     def __le__(self, other):
         return self.h_g <= other.h_g
 
+    def __str__(self):
+        return "(" + ",".join((str(self.node), str(self.g),
+                               str(self.h_g))) + ")"
+
+    def __repr__(self):
+        return "Node(" + ",".join((repr(self.node), repr(self.g),
+                                   repr(self.h_g - g),
+                                   repr(self.previous))) + ")"
+
 
 class Heuristic(object):
     def __init__(self, dest_node, world):
@@ -102,8 +111,14 @@ class AStar(object):
             for conn in self._graph.get_connections(cur.node):
                 next_node = Node(conn[0], cur.g + conn[1],
                                  hfunc.calculate(conn[0]), cur)
-                if next_node not in closedset and next_node not in openset:
-                    openset.append(next_node)
+                if next_node not in closedset:
+                    if next_node in openset:
+                        cur_node = openset[openset.index(next_node)]
+                        if next_node < cur_node:
+                            openset.remove(cur_node)
+                            openset.append(next_node)
+                    else:
+                        openset.append(next_node)
 
             openset.remove(cur)
             closedset.append(cur)
@@ -115,11 +130,15 @@ class Wall(pyafai.Object):
     def __init__(self, x, y):
         super(Wall, self).__init__(x, y)
 
-        self.add_shape(shapes.Rect(20,20, color=('c3B',(255,255,255))))
+        self.add_shape(shapes.Rect(20, 20, color=('c3B',(255,255,255))))
 
 
 class Mountain(pyafai.Object):
-    pass
+    def __init__(self, x, y, height):
+        super(Mountain, self).__init__(x, y)
+
+        self.height = height
+        self.add_shape(shapes.Rect(20, 20, color=('c3B', ())))
 
 
 class Wanderer(pyafai.Agent):
@@ -131,6 +150,8 @@ class Wanderer(pyafai.Agent):
 
         self._target = None
         self._path = None
+        self._timestep = 0.2
+        self._elapsedtime = 0
 
     def set_target(self, x, y):
         self._target = (x, y)
@@ -151,8 +172,11 @@ class Wanderer(pyafai.Agent):
 
         else:
             if len(self._path) > 0:
-                next_dest = self.world.get_location(self._path.pop(0))
-                self.body.move_to(*next_dest)
+                self._elapsedtime += delta
+                if self._elapsedtime >= self._timestep:
+                    next_dest = self.world.get_location(self._path.pop(0))
+                    self.body.move_to(*next_dest)
+                    self._elapsedtime = 0
             else:
                 self._path = None
 
