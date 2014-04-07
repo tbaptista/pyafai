@@ -253,6 +253,7 @@ class World2DGrid(World):
         self._grid[obj.y][obj.x].append(obj)
 
     def update(self, delta):
+        if not self.paused:
             #process agents
             self.process_agents(delta)
 
