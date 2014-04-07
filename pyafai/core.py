@@ -301,6 +301,9 @@ class World2DGrid(World):
     def grid_height(self):
         return self._height
 
+    def is_empty(self, x, y):
+        return len(self._grid[y][x]) == 0
+
     def get_cell(self, x, y):
         return (x // self.cell, y // self.cell)
 
