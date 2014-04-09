@@ -138,7 +138,9 @@ class Mountain(pyafai.Object):
         super(Mountain, self).__init__(x, y)
 
         self.height = height
-        self.add_shape(shapes.Rect(20, 20, color=('c3B', ())))
+        self.add_shape(shapes.Rect(20, 20, color=('c3B', (int(255*height),
+                                                          int(255*height),
+                                                          0))))
 
 
 class Wanderer(pyafai.Agent):
@@ -161,6 +163,7 @@ class Wanderer(pyafai.Agent):
             self._path = None
 
     def _think(self, delta):
+        #If we are not already moving on a path
         if self._path is None:
             if self._target is not None:
                 #calculate path using A*
@@ -206,10 +209,7 @@ class MyWorld(pyafai.World2DGrid):
             for y in range(self._height):
 
                 #verify if current cell is a wall
-                is_wall = False
-                for obj in self.get_cell_contents(x, y):
-                    if type(obj) == Wall:
-                        is_wall = True
+                is_wall = self.has_object_type_at(x, y, Wall)
 
                 #if it is not a wall, calculate connections and weights
                 if not is_wall:
@@ -224,6 +224,8 @@ class MyWorld(pyafai.World2DGrid):
                                 if obj.x == x1 and obj.y == y1:
                                     if type(obj) == Wall:
                                         weight = 0
+                                    if type(obj) == Mountain:
+                                        weight = weight * 10 * obj.height
 
                             if weight != 0:
                                 connections.append((y1*self._width + x1, weight))
@@ -254,15 +256,19 @@ class MyDisplay(pyafai.Display):
 
         if button == mouse.RIGHT:
             x1, y1 = self.world.get_cell(x, y)
-            wall = Wall(x1, y1)
-            self.world.add_object(wall)
+            if not (modifiers & key.MOD_CTRL):
+                wall = Wall(x1, y1)
+                self.world.add_object(wall)
+            else:
+                mountain = Mountain(x1, y1, 0.3)
+                self.world.add_object(mountain)
         elif button == mouse.LEFT:
             x1, y1 = self.world.get_cell(x, y)
             self.world.send_player_to(x1, y1)
 
 
 def setup():
-    world = MyWorld(25, 20, 20)
+    world = MyWorld(10, 10, 20)
     display = MyDisplay(world)
 
 
