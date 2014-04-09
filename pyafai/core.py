@@ -304,6 +304,13 @@ class World2DGrid(World):
     def is_empty(self, x, y):
         return len(self._grid[y][x]) == 0
 
+    def has_object_type_at(self, x, y, objtype):
+        for obj in self._grid[y][x]:
+            if type(obj) == objtype:
+                return True
+
+        return False
+
     def get_cell(self, x, y):
         return (x // self.cell, y // self.cell)
 
