@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 #coding: utf-8
 #-----------------------------------------------------------------------------
 # Copyright (c) 2014 Tiago Baptista
@@ -5,7 +6,13 @@
 #-----------------------------------------------------------------------------
 
 """
-Braitenberg vehicles simulation using the iia framework.
+Braitenberg vehicles simulation using the pyafai framework. Implementation of
+vehicles 2a, 2b, 3a, and 3b. There are also two extra vehicles that are not
+in the original Valentino Braitenberg's vehicle definitions.
+
+Usage:
+Press the I key to toggle the display of the lights' influence map.
+Use the left mouse button to add lights to the environment.
 """
 
 __docformat__ = 'restructuredtext'
@@ -14,7 +21,7 @@ __author__ = 'Tiago Baptista'
 
 #Allow the import of the framework from one directory down the hierarchy
 import sys
-sys.path.insert(1,'..')
+sys.path.insert(1, '..')
 
 import pyafai
 from pyafai import influence
@@ -35,6 +42,7 @@ class LightSource(pyafai.Object):
         
         self.inf = influence.CircularInfluence(x, y, radius = radius,
                                                limit = 0.001)
+        #use a quadratic diffuse function
         self.inf.func = influence.CircularInfluence.light_diffuse
         
         self.add_shape(shapes.Circle(4, color=('c3B', (210,210,0))))
@@ -197,10 +205,7 @@ class BraitenbergDisplay(pyafai.Display):
 
         
 
-def setup_random(n_lights, n_vehicles, vehicle_type):
-    world = BraitenbergWorld(500, 500, sector = 5)
-    display = BraitenbergDisplay(world)
-
+def setup_random(world, n_lights, n_vehicles, vehicle_type):
     for i in range(n_vehicles):
         v = vehicle_type(random.randint(100, world.width - 100),
                       random.randint(100, world.height - 100))
@@ -218,6 +223,10 @@ def setup_random(n_lights, n_vehicles, vehicle_type):
 
 
 if __name__ == '__main__':
-    setup_random(10, 5, MyVehicle1)
-    pyafai.run()
+    world = BraitenbergWorld(500, 500, sector=5)
+    display = BraitenbergDisplay(world)
 
+    #create lights and vehicles at random locations
+    setup_random(world, 10, 5, MyVehicle1)
+
+    pyafai.run()
