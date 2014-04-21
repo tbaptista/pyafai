@@ -215,8 +215,10 @@ class World2DGrid(World):
     """A 2D Grid world, closed, and optionally toroidal"""
 
     moore = ((-1,-1), (0,-1), (1,-1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1))
+    von_neumann = ((-1, 0), (0, -1), (1, 0), (0, 1))
     
-    def __init__(self, width=25, height=25, cell=20, tor=False):
+    def __init__(self, width=25, height=25, cell=20, tor=False,
+                 nhood = moore):
         World.__init__(self)
         self._width = width
         self._height = height
@@ -225,6 +227,7 @@ class World2DGrid(World):
         self.cell = cell
         self._half_cell = cell / 2
         self._tor = tor
+        self._nhood = nhood
         self._grid = [[[] for c in range(width)] for l in range(height)]
 
         #visual grid
@@ -319,7 +322,7 @@ class World2DGrid(World):
 
     def get_neighbours(self, x, y):
         result = []
-        for dx,dy in World2DGrid.moore:
+        for dx,dy in self._nhood:
             x1 = x + dx
             y1 = y + dy
             if 0 <= x1 < self._width and 0 <= y1 < self._height:

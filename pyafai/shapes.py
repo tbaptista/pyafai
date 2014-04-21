@@ -19,12 +19,23 @@ class Shape(object):
     def __init__(self, color=('c3B', (255,255,255))):
         self.gl_type = None
         self.vertices = None
-        self.color = color
+        self._color = color
         self.vertexlist = None
 
     def __del__(self):
         if self.vertexlist != None:
             self.vertexlist.delete()
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, value):
+        if self.vertexlist is not None:
+            self.vertexlist.colors[:] = [value] * self.vertexlist.get_size()
+
+        self._color = value
 
     def add_to_batch(self, batch):
         if self.vertexlist == None:
@@ -113,10 +124,6 @@ class Grid(Shape):
             vertices.extend([0, i*cell, width, i*cell])
 
         self.vertices = ('v2f', tuple(vertices))
-
-
-
-
 
 
 class Sprite(Shape):
