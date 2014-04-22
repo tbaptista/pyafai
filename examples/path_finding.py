@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 #coding: utf-8
 #-----------------------------------------------------------------------------
 # Copyright (c) 2014 Tiago Baptista
@@ -5,7 +6,8 @@
 #-----------------------------------------------------------------------------
 
 """
-Braitenberg vehicles simulation using the iia framework.
+Pathfinding example using the A* algorithm.
+
 """
 
 __docformat__ = 'restructuredtext'
@@ -16,14 +18,13 @@ __author__ = 'Tiago Baptista'
 import sys
 sys.path.insert(1,'..')
 
+import pyglet
 import pyafai
-from pyafai import influence
 from pyafai import shapes
-from pyafai import objects
 import math
 import pyglet.window.key as key
 import pyglet.window.mouse as mouse
-import random
+import heapq
 
 
 class Graph(object):
@@ -39,6 +40,15 @@ class Graph(object):
     def clear(self):
         self._graph = {}
 
+    def get_nodes(self):
+        return self._graph.keys()
+
+    def __len__(self):
+        return len(self._graph)
+
+    def __iter__(self):
+        return self._graph.__iter__()
+
 
 class Node(object):
     def __init__(self, node, g, h, previous=None):
@@ -47,8 +57,14 @@ class Node(object):
         self.h_g = h+g
         self.previous = previous
 
+    def __hash__(self):
+        return self.node.__hash__()
+
     def __eq__(self, other):
         return self.node == other.node
+
+    def __ne__(self, other):
+        return self.node != other.node
 
     def __gt__(self, other):
         return self.h_g > other.h_g
@@ -68,7 +84,7 @@ class Node(object):
 
     def __repr__(self):
         return "Node(" + ",".join((repr(self.node), repr(self.g),
-                                   repr(self.h_g - g),
+                                   repr(self.h_g - self.g),
                                    repr(self.previous))) + ")"
 
 
@@ -100,10 +116,11 @@ class AStar(object):
     def execute(self, source, dest, hfunc):
         start_node = Node(source, 0, hfunc.calculate(source))
         openset = [start_node]
+        heapq.heapify(openset)
         closedset = []
 
         while len(openset) > 0:
-            cur = min(openset)
+            cur = heapq.heappop(openset)
 
             if cur.node == dest:
                 return self._build_path(cur)
@@ -116,15 +133,13 @@ class AStar(object):
                         cur_node = openset[openset.index(next_node)]
                         if next_node < cur_node:
                             openset.remove(cur_node)
-                            openset.append(next_node)
+                            heapq.heappush(openset, next_node)
                     else:
-                        openset.append(next_node)
+                        heapq.heappush(openset, next_node)
 
-            openset.remove(cur)
-            closedset.append(cur)
+            heapq.heappush(closedset, cur)
 
         return None
-
 
 class Wall(pyafai.Object):
     def __init__(self, x, y):
@@ -190,10 +205,20 @@ class MyWorld(pyafai.World2DGrid):
     def __init__(self, width, height, cell):
         super(MyWorld, self).__init__(width, height, cell)
 
+        self._nhood = pyafai.World2DGrid.von_neumann
         self._graph = Graph()
+        self._gdisplay = GraphDisplay(self._graph, self, cell)
+        self.showgraph = False
 
         self.player = Wanderer(10, 10, 15)
         self.add_agent(self.player)
+
+        self.generate_graph()
+
+    def draw(self):
+        super(MyWorld, self).draw()
+        if self.showgraph:
+            self._gdisplay.draw()
 
     @property
     def graph(self):
@@ -215,7 +240,7 @@ class MyWorld(pyafai.World2DGrid):
                 if not is_wall:
                     neighbours = self.get_neighbours(x, y)
                     connections = []
-                    for dx,dy in MyWorld.moore:
+                    for dx,dy in self._nhood :
                         x1 = x + dx
                         y1 = y + dy
                         if 0 <= x1 < self._width and 0 <= y1 < self._height:
@@ -232,8 +257,11 @@ class MyWorld(pyafai.World2DGrid):
 
                     self._graph.add_node(y * self._width + x, connections)
 
+        self._gdisplay = GraphDisplay(self._graph, self, self.cell)
+
     def send_player_to(self, x, y):
-        self.player.set_target(x, y)
+        if not self.has_object_type_at(x, y, Wall):
+            self.player.set_target(x, y)
 
     def get_location(self, node):
         x = node % self._width
@@ -243,6 +271,40 @@ class MyWorld(pyafai.World2DGrid):
     def get_node_id(self, x, y):
         return y*self._width + x
 
+
+class GraphDisplay(object):
+    def __init__(self, graph, world, cell):
+        self._batch = pyglet.graphics.Batch()
+        self._node_shapes = [None] * (world.grid_width * world.grid_height)
+        self._conn_shapes = []
+
+        half_cell = cell/2
+        color = ('c4B', (150,150,150,100))
+
+
+        #create nodes
+        for node in graph.get_nodes():
+            x, y = world.get_location(node)
+            shape = shapes.Circle(4, cell*x+half_cell, cell*y+half_cell,
+                                  color = color)
+            shape.add_to_batch(self._batch)
+            self._node_shapes[node] = shape
+
+        #create connections
+        for node in graph.get_nodes():
+            x1, y1 = world.get_location(node)
+            for dest in graph.get_connections(node):
+                x2, y2 = world.get_location(dest[0])
+                shape = shapes.Line(cell*x1+half_cell, cell*y1+half_cell,
+                                    cell*x2+half_cell, cell*y2+half_cell,
+                                    color = color)
+                shape.add_to_batch(self._batch)
+                self._conn_shapes.append(shape)
+
+    def draw(self):
+        self._batch.draw()
+
+
 class MyDisplay(pyafai.Display):
 
     def on_key_press(self, symbol, modifiers):
@@ -250,6 +312,9 @@ class MyDisplay(pyafai.Display):
 
         if symbol == key.G:
             self.world.generate_graph()
+
+        if symbol == key.D:
+            self.world.showgraph = not self.world.showgraph
 
     def on_mouse_release(self, x, y, button, modifiers):
         super(MyDisplay, self).on_mouse_release(x, y, button, modifiers)
@@ -268,7 +333,7 @@ class MyDisplay(pyafai.Display):
 
 
 def setup():
-    world = MyWorld(10, 10, 20)
+    world = MyWorld(20, 20, 20)
     display = MyDisplay(world)
 
 
