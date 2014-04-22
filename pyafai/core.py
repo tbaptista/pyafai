@@ -321,11 +321,22 @@ class World2DGrid(World):
         return self._grid[y][x]
 
     def get_neighbours(self, x, y):
+        """Returns a list of all the objects that are neighbours of the cell
+        at (x,y). The neighbourhood used is defined in _nhood.
+
+        :param x: The cell's x coordinate (column).
+        :param y: The cell's y coordinate (line).
+        :return: A list with the neighbour objects.
+        """
         result = []
         for dx,dy in self._nhood:
             x1 = x + dx
             y1 = y + dy
-            if 0 <= x1 < self._width and 0 <= y1 < self._height:
+            if not self._tor and 0 <= x1 < self._width and 0 <= y1 < self._height:
+                result.extend(self._grid[y1][x1])
+            elif self._tor:
+                x1 = x1 % self._width
+                y1 = y1 % self._height
                 result.extend(self._grid[y1][x1])
 
         return result
