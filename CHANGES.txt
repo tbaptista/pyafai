@@ -1,3 +1,11 @@
+v1.0b9, 2014-04-29
+    * Implement agent death.
+    * Implement methods to remove objects from the world.
+
+v1.0b8, 2014-04-22
+    * New methods in the World2DGrid (grid_width, grid_height, get_cell_contents, is_empty, has_object_type_at).
+    * Add Von Neumann neighbourhood to the World2DGrid.
+
 v1.0b7, 2014-03-31
     * Allow to optionally disable multisampling to correct erros on some systems not able to use multisampling.
     * New features added to the grid world.
@@ -9,19 +17,19 @@ v1.0b6, 2014-03-20
     * New example on the usage of the grid world.
 
 v1.0b5, 2014-03-13
-    * The simulator can now be paused (P key)
-    * Add a draw method to InfluenceMapDisplay
-    * The light diffuse function in CircularInfluence now has a minimum value
+    * The simulator can now be paused (P key).
+    * Add a draw method to InfluenceMapDisplay.
+    * The light diffuse function in CircularInfluence now has a minimum value.
 
 v1.0b4, 2014-03-10
     * The influence diffuse function can now be changed on a per instance basis.
     * The window size will now follow the settings for the world size.
 
 v1.0b3, 2014-03-06
-    * Package can now be installed using distutils setup.py
+    * Package can now be installed using distutils setup.py.
     * New core sub-module created. Core classes moved there.
-    * New diffuse functions available in Influence Map
-    * Object angle is now normalized to 0-360 degrees
+    * New diffuse functions available in Influence Map.
+    * Object angle is now normalized to 0-360 degrees.
 
 
 v1.0b2, 2014-02-26

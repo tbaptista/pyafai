@@ -1,8 +1,9 @@
 from distutils.core import setup
+from pyafai import __version__
 
 setup(
     name='pyafai',
-    version='1.0b8',
+    version=__version__,
     description='Python Agent Framework for Artificial Intelligence',
     url='none',
     author='Tiago Baptista',
