@@ -28,6 +28,13 @@ class MyDisplay(pyafai.Display):
             x1, y1 = self.world.get_cell(x, y)
             print(self.world.get_neighbours(x1, y1))
 
+        elif button == mouse.RIGHT:
+            x1, y1 = self.world.get_cell(x, y)
+            obj_list = self.world.get_cell_contents(x1, y1)
+            for obj in obj_list:
+                if obj.is_body:
+                    obj.agent.kill()
+
 
 def main():
     world = pyafai.World2DGrid(10, 10, 30, True)
@@ -37,6 +44,13 @@ def main():
     shape = pyafai.shapes.Circle(10, color=('c3B', (180, 0, 0)))
     obj.add_shape(shape)
     world.add_object(obj)
+
+    obj = pyafai.Object(4, 8)
+    shape = pyafai.shapes.Circle(10, color=('c3B', (180, 180, 0)))
+    obj.add_shape(shape)
+    agent = pyafai.Agent()
+    agent.body = obj
+    world.add_agent(agent)
 
     pyafai.run()
 
