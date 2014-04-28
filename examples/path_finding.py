@@ -271,6 +271,25 @@ class MyWorld(pyafai.World2DGrid):
     def get_node_id(self, x, y):
         return y*self._width + x
 
+    def empty_location(self, x, y):
+        obj_list = self.get_cell_contents(x, y)
+        for obj in obj_list:
+            self.remove_object(obj)
+
+    def create_wall(self, x, y):
+        self.empty_location(x, y)
+
+        #create the wall
+        wall = Wall(x, y)
+        self.add_object(wall)
+
+
+    def create_mountain(self, x, y, height):
+        self.empty_location(x, y)
+
+        #create the mountain
+        mountain = Mountain(x, y, height)
+        self.add_object(mountain)
 
 class GraphDisplay(object):
     def __init__(self, graph, world, cell):
@@ -321,12 +340,12 @@ class MyDisplay(pyafai.Display):
 
         if button == mouse.RIGHT:
             x1, y1 = self.world.get_cell(x, y)
-            if not (modifiers & key.MOD_CTRL):
-                wall = Wall(x1, y1)
-                self.world.add_object(wall)
+            if modifiers & key.MOD_SHIFT:
+                self.world.empty_location(x1, y1)
+            elif not (modifiers & key.MOD_CTRL):
+                self.world.create_wall(x1, y1)
             else:
-                mountain = Mountain(x1, y1, 0.3)
-                self.world.add_object(mountain)
+                self.world.create_mountain(x1, y1, 0.3)
         elif button == mouse.LEFT:
             x1, y1 = self.world.get_cell(x, y)
             self.world.send_player_to(x1, y1)
