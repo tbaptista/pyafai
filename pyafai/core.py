@@ -27,17 +27,35 @@ class Object(object):
         self._angle = angle
         self._batch = pyglet.graphics.Batch()
         self._shapes = []
+        self._is_body = False
+        self._agent = None
 
     def __repr__(self):
         return str(type(self).__name__) + "(" + ",".join((str(self.x),
                                                  str(self.y),
                                                  str(self.angle))) + ")"
-        
+
+    @property
+    def is_body(self):
+        return self._is_body
+
+    @property
+    def agent(self):
+        return self._agent
+
+    @agent.setter
+    def agent(self, agent):
+        if agent is None:
+            self._is_body = False
+            self._agent = None
+        else:
+            self._is_body = True
+            self._agent = agent
+
     def add_shape(self, shape):
         shape.add_to_batch(self._batch)
         self._shapes.append(shape)
 
-        
     def draw(self):
         pyglet.gl.glPushMatrix()
         pyglet.gl.glTranslatef(self.x, self.y, 0)
@@ -81,10 +99,24 @@ class Object(object):
 class Agent(object):
     """This Class represents an agent in the world"""
     def __init__(self):
-        self.body = None
+        self._body = None
         self._actions = []
         self._perceptions = {}
         self.world = None
+        self._dead = False
+
+    @property
+    def body(self):
+        return self._body
+
+    @body.setter
+    def body(self, value):
+        self._body = value
+        value.agent = self
+
+    @property
+    def is_dead(self):
+        return self._dead
 
     def add_perception(self, perception):
         self._perceptions[perception.name] = perception
@@ -95,6 +127,9 @@ class Agent(object):
         if actions:
             for action in actions:
                 self.action()
+
+    def kill(self):
+        self._dead = True
         
     def _update_perceptions(self):
         for p in self._perceptions.values():
@@ -102,6 +137,7 @@ class Agent(object):
     
     def _think(self, delta):
         return []
+
 
 class Perception(object):
     """A generic perception class."""
@@ -117,11 +153,13 @@ class Perception(object):
     def __str__(self):
         return self.name
 
+
 class World(object):
     """The environment where to put our agents and objects"""
     def __init__(self):
         self._batch = pyglet.graphics.Batch()
         self._agents = []
+        self._dead_agents = []
         self._objects = []
         self._shapes = []
         self.paused = False
@@ -134,6 +172,13 @@ class World(object):
         else:
             print("Trying to add an object to the world that is not of type\
                   Object!")
+
+    def remove_object(self, obj):
+        if not obj.is_body and obj in self._objects:
+            self._objects.remove(obj)
+        else:
+            print("Trying tp remove an object that is not present in the\
+             world, or is the body of an agent!")
         
     def add_agent(self, agent):
         if isinstance(agent, Agent):
@@ -144,6 +189,13 @@ class World(object):
         else:
             print("Trying to add an agent to the world that is not of type\
                   Agent!")
+
+    def _remove_agent(self, agent):
+        if agent in self._agents:
+            agent.world = None
+            agent.body.agent = None
+            self._agents.remove(agent)
+            self.remove_object(agent.body)
 
     def pause_toggle(self):
         self.paused = not self.paused
@@ -158,9 +210,19 @@ class World(object):
             for obj in self._objects:
                 obj.update(delta)
 
+            #remove dead agents
+            self._remove_dead_agents()
+
     def process_agents(self, delta):
         for a in self._agents:
-            a.update(delta)
+            if not a.is_dead:
+                a.update(delta)
+            else:
+                self._dead_agents.append(a)
+
+    def _remove_dead_agents(self):
+        for a in self._dead_agents:
+            self._remove_agent(a)
     
     def draw(self):
         self._batch.draw()
@@ -168,19 +230,6 @@ class World(object):
     def draw_objects(self):
         for obj in self._objects:
             obj.draw()
-
-    def get_object_at(self, x, y):
-        """Return the first object found at the position x, y, if any.
-
-        :param x: The x position
-        :param y: The y position
-        """
-
-        for obj in self._objects:
-            if obj.check_point(x, y):
-                return obj
-
-        return None
             
 
 class World2D(World):
@@ -209,6 +258,23 @@ class World2D(World):
                     obj.x = 0
                 if obj.y < 0:
                     obj.y = 0
+
+            #remove dead agents
+            self._remove_dead_agents()
+
+    def get_object_at(self, x, y):
+        """Return the first object found at the screen's (x, y) position,
+        if any.
+
+        :param x: The x position
+        :param y: The y position
+        """
+
+        for obj in self._objects:
+            if obj.check_point(x, y):
+                return obj
+
+        return None
         
         
 class World2DGrid(World):
@@ -255,16 +321,23 @@ class World2DGrid(World):
         World.add_object(self, obj)
         self._grid[obj.y][obj.x].append(obj)
 
+    def remove_object(self, obj):
+        World.remove_object(self, obj)
+        if not obj.is_body:
+            self._grid[obj.y][obj.x].remove(obj)
+
     def update(self, delta):
         if not self.paused:
+            #remove all objects from the grid for update
+            for obj in self._objects:
+                #remove from _grid
+                self._grid[obj.y][obj.x].remove(obj)
+
             #process agents
             self.process_agents(delta)
 
             #update all objects
             for obj in self._objects:
-                #remove from _grid
-                #self._grid[obj.y][obj.x].remove(obj)
-
                 obj.update(delta)
 
                 #check bounds
@@ -284,7 +357,10 @@ class World2DGrid(World):
                         obj.y = obj.y % self._height
 
                 #re-add to _grid
-                #self._grid[obj.y][obj.x].append(obj)
+                self._grid[obj.y][obj.x].append(obj)
+
+            #remove dead agents
+            self._remove_dead_agents()
 
     def draw_objects(self):
         for obj in self._objects:
