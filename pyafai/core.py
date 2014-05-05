@@ -326,18 +326,29 @@ class World2DGrid(World):
         if not obj.is_body:
             self._grid[obj.y][obj.x].remove(obj)
 
+    def process_agents(self, delta):
+        for a in self._agents:
+            if not a.is_dead:
+                #remove body from grid
+                self._grid[a.body.y][a.body.x].remove(a.body)
+
+                a.update(delta)
+
+                #re-add to grid
+                self._grid[a.body.y][a.body.x].append(a.body)
+            else:
+                self._dead_agents.append(a)
+
     def update(self, delta):
         if not self.paused:
-            #remove all objects from the grid for update
-            for obj in self._objects:
-                #remove from _grid
-                self._grid[obj.y][obj.x].remove(obj)
-
             #process agents
             self.process_agents(delta)
 
             #update all objects
             for obj in self._objects:
+                #remove from _grid
+                self._grid[obj.y][obj.x].remove(obj)
+
                 obj.update(delta)
 
                 #check bounds
