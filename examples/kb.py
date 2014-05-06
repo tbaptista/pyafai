@@ -500,6 +500,17 @@ class MyWorld(pyafai.World2DGrid):
         mountain = Mountain(x, y, height)
         self.add_object(mountain)
 
+    def create_random_resource(self):
+        color = random.choice(list(Resource.colors.keys()))
+        shape = random.choice(list(Resource.shapes.keys()))
+        x = random.randint(0, self.grid_width-1)
+        y = random.randint(0, self.grid_height-1)
+        while (len(self.get_cell_contents(x, y)) > 0):
+            x = random.randint(0, self.grid_width)
+            y = random.randint(0, self.grid_height)
+        res = Resource(x, y, color, shape)
+        self.add_object(res)
+
     def get_resource_location(self):
         res_list = []
         for obj in self._objects:
@@ -575,19 +586,48 @@ def setup():
     display = MyDisplay(world)
 
     #create resources
-    meat = Resource(10, 10, 'red', 'rectangle')
+    meat = Resource(random.randint(0,19), random.randint(0,19), 'red', 'rectangle')
     world.add_object(meat)
-    veg = Resource(4, 18, 'green', 'circle')
+    veg = Resource(random.randint(0,19), random.randint(0,19), 'green', 'circle')
     world.add_object(veg)
-    venom = Resource(15, 6, 'blue', 'rectangle')
+    venom = Resource(random.randint(0,19), random.randint(0,19), 'blue', 'rectangle')
     world.add_object(venom)
 
     #create agent
     agent = KBAgent(0, 0, 15)
     world.add_agent(agent)
 
+
+def setup_random():
+    """
+    Setup a random world, with walls and resource items at random locations.
+    Note that there is no check to make sure that the type of resources that
+    the agent needs exist in the world.
+
+    """
+    world = MyWorld(20, 20, 20)
+    display = MyDisplay(world)
+
+    #create some walls
+    for i in range(100):
+        x = 0
+        y = 0
+        while (x == 0 and y == 0):
+            x = random.randint(0, world.grid_width-1)
+            y = random.randint(0, world.grid_height-1)
+        world.create_wall(x, y)
+    world.generate_graph()
+
+    #create resources
+    for i in range(20):
+        world.create_random_resource()
+
+    #create agent
+    agent = KBAgent(0, 0, 15)
+    world.add_agent(agent)
+
 if __name__ == '__main__':
-    setup()
+    setup_random()
     pyafai.run()
     #mykb = KB("kb.txt")
     #print(mykb.infer(["red", "rectangle"]))
