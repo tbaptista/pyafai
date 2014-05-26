@@ -319,23 +319,23 @@ class World2DGrid(World):
                 obj.y = obj.y % self._height
 
         World.add_object(self, obj)
-        self._grid[obj.y][obj.x].append(obj)
+        self._grid[int(obj.y)][int(obj.x)].append(obj)
 
     def remove_object(self, obj):
         World.remove_object(self, obj)
         if not obj.is_body:
-            self._grid[obj.y][obj.x].remove(obj)
+            self._grid[int(obj.y)][int(obj.x)].remove(obj)
 
     def process_agents(self, delta):
         for a in self._agents:
             if not a.is_dead:
                 #remove body from grid
-                self._grid[a.body.y][a.body.x].remove(a.body)
+                self._grid[int(a.body.y)][int(a.body.x)].remove(a.body)
 
                 a.update(delta)
 
                 #re-add to grid
-                self._grid[a.body.y][a.body.x].append(a.body)
+                self._grid[int(a.body.y)][int(a.body.x)].append(a.body)
             else:
                 self._dead_agents.append(a)
 
@@ -347,7 +347,7 @@ class World2DGrid(World):
             #update all objects
             for obj in self._objects:
                 #remove from _grid
-                self._grid[obj.y][obj.x].remove(obj)
+                self._grid[int(obj.y)][int(obj.x)].remove(obj)
 
                 obj.update(delta)
 
@@ -368,7 +368,7 @@ class World2DGrid(World):
                         obj.y = obj.y % self._height
 
                 #re-add to _grid
-                self._grid[obj.y][obj.x].append(obj)
+                self._grid[int(obj.y)][int(obj.x)].append(obj)
 
             #remove dead agents
             self._remove_dead_agents()
