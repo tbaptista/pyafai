@@ -6,6 +6,7 @@
 
 """
 KB agents
+
 """
 
 __docformat__ = 'restructuredtext'
@@ -342,7 +343,7 @@ class KBAgent(pyafai.Agent):
         #pathfinding
         self._target = None
         self._path = None
-        self._timestep = 0.2
+        self._timestep = 0.1
         self._elapsedtime = 0
 
         #kb
@@ -503,11 +504,11 @@ class MyWorld(pyafai.World2DGrid):
     def create_random_resource(self):
         color = random.choice(list(Resource.colors.keys()))
         shape = random.choice(list(Resource.shapes.keys()))
-        x = random.randint(0, self.grid_width-1)
-        y = random.randint(0, self.grid_height-1)
+        x = random.randint(0, self.grid_width - 1)
+        y = random.randint(0, self.grid_height - 1)
         while (len(self.get_cell_contents(x, y)) > 0):
-            x = random.randint(0, self.grid_width)
-            y = random.randint(0, self.grid_height)
+            x = random.randint(0, self.grid_width - 1)
+            y = random.randint(0, self.grid_height - 1)
         res = Resource(x, y, color, shape)
         self.add_object(res)
 
@@ -582,6 +583,10 @@ class MyDisplay(pyafai.Display):
 
 
 def setup():
+    """
+    Setup a world with three resource items, one of each type.
+
+    """
     world = MyWorld(20, 20, 20)
     display = MyDisplay(world)
 
@@ -623,12 +628,14 @@ def setup_random():
         world.create_random_resource()
 
     #create agent
-    agent = KBAgent(0, 0, 15)
+    agent = KBAgent(0, 0, 15, 'kb.txt')
     world.add_agent(agent)
 
 if __name__ == '__main__':
     setup_random()
     pyafai.run()
+
+    #test only the KB
     #mykb = KB("kb.txt")
     #print(mykb.infer(["red", "rectangle"]))
 
