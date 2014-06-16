@@ -11,7 +11,7 @@ An agent framework for the Introduction to Artificial Intelligence course.
 from __future__ import division
 
 __docformat__ = 'restructuredtext'
-__version__ = '1.0b10'
+__version__ = '1.0b11'
 __author__ = 'Tiago Baptista'
 
 #Try to import the pyglet package
