@@ -466,6 +466,10 @@ class Display(pyglet.window.Window):
         self.fps_display = pyglet.clock.ClockDisplay()
 
         self.world = world
+        if self.world.paused:
+            self.set_caption(self.caption + " (paused)")
+        else:
+            self.set_caption(self.caption.replace(" (paused)", ""))
 
     def on_draw(self):
         #clear window
