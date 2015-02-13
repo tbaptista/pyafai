@@ -139,7 +139,13 @@ class Vehicle3b(Vehicle):
         return []
 
 
-class MyVehicle1(Vehicle):
+class MyVehicle1a(Vehicle):
+    def _think(self, delta):
+        self.body.vel_wheels = (self._perceptions["left"].value, 1-self._perceptions["right"].value)
+        return []
+
+
+class MyVehicle1b(Vehicle):
     def _think(self, delta):
         self.body.vel_wheels = (self._perceptions["right"].value, 1-self._perceptions["left"].value)
         return []
@@ -221,12 +227,23 @@ def setup_random(world, n_lights, n_vehicles, vehicle_type):
         else:
             world.add_light(l, True)
 
+def setup_one(vehicle_type):
+
+    v = vehicle_type(230,200)
+    v.body.angle = 90
+    world.add_agent(v)
+
+
+    l = LightSource(250, 300, 500)
+    world.add_light(l)
 
 if __name__ == '__main__':
     world = BraitenbergWorld(500, 500, sector=5)
+    world.paused = True
     display = BraitenbergDisplay(world)
 
     #create lights and vehicles at random locations
-    setup_random(world, 10, 5, MyVehicle1)
+    #setup_random(world, 1, 5, MyVehicle1)
+    setup_one(Vehicle3a)
 
     pyafai.run()
