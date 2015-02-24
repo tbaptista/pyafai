@@ -1,4 +1,8 @@
-v1.0b11, 
+v1.0b11, 2015-02-24
+    * Add Action class. Agent _think method now optionally returns a list of Action objects.
+    * Fix: On grid world, convert object coordinates to int, to prevent indexing errors.
+    * Default window title now changes if the world is paused.
+
 
 v1.0b10, 2014-05-05
     * Fix object update method for grid world
@@ -39,7 +43,7 @@ v1.0b3, 2014-03-06
 
 v1.0b2, 2014-02-26
     * [basic_example] change color of one object.
-    * pyafai os now compatible with Python 2. Tested only on Python 2.7.
+    * pyafai is now compatible with Python 2. Tested only on Python 2.7.
     * Make the World2D be closed (agents are confined to the world size).
     * Enable OpenGL multisampling when available in the hardware.
     * Add methods to Display class to catch keyboard and mouse events.
