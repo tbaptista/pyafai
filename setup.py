@@ -1,14 +1,18 @@
-from distutils.core import setup
+from setuptools import setup
 from pyafai import __version__
+
+with open('README.rst', encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='pyafai',
     version=__version__,
     description='Python Agent Framework for Artificial Intelligence',
+    long_description = long_description,
     url='none',
     author='Tiago Baptista',
     author_email='baptista@dei.uc.pt',
     packages=['pyafai'],
-    license='LICENSE.txt',
-    long_description=open('README.rst').read(),
+    install_requires = ['pyglet'],
+    license='LICENSE.txt'
 )
