@@ -1,12 +1,15 @@
 from setuptools import setup
-from pyafai import __version__
 
 with open('README.rst', encoding='utf-8') as f:
     long_description = f.read()
 
+version = {}
+with open('pyafai/__version__.py', encoding='utf-8') as f:
+    exec(f.read(), version)
+
 setup(
     name='pyafai',
-    version=__version__,
+    version=version['__version__'],
     description='Python Agent Framework for Artificial Intelligence',
     long_description = long_description,
     url='none',
