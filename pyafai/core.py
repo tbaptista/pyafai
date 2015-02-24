@@ -100,7 +100,7 @@ class Agent(object):
     """This Class represents an agent in the world"""
     def __init__(self):
         self._body = None
-        self._actions = []
+        self._actions = {}
         self._perceptions = {}
         self.world = None
         self._dead = False
@@ -120,13 +120,16 @@ class Agent(object):
 
     def add_perception(self, perception):
         self._perceptions[perception.name] = perception
+
+    def add_action(self, action):
+        self._actions[action.name] = action
     
     def update(self, delta):
         self._update_perceptions()
         actions = self._think(delta)
         if actions:
             for action in actions:
-                self.action()
+                action.execute(self)
 
     def kill(self):
         self._dead = True
@@ -148,6 +151,19 @@ class Perception(object):
         self.name = name
 
     def update(self, agent):
+        pass
+
+    def __str__(self):
+        return self.name
+
+
+class Action(object):
+    """A generic action class."""
+
+    def __init__(self, name = "None"):
+        self.name = name
+
+    def execute(self, agent):
         pass
 
     def __str__(self):
