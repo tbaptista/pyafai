@@ -1,1 +1,1 @@
-Copyright (c) 2014 Tiago Rodrigues Baptista
+Copyright (c) 2014-2015 Tiago Rodrigues Baptista

@@ -18,10 +18,11 @@ import pyglet
 import pyglet.window.key as key
 from . import shapes
 
+
 class Object(object):
     """This class represents a generic object in the world"""
     
-    def __init__(self, x = 0, y = 0, angle = 0.0):
+    def __init__(self, x=0, y=0, angle=0.0):
         self.x = x
         self.y = y
         self._angle = angle
@@ -156,6 +157,9 @@ class Perception(object):
     def __str__(self):
         return self.name
 
+    def __eq__(self, other):
+        return self.name == other.name
+
 
 class Action(object):
     """A generic action class."""
@@ -168,6 +172,9 @@ class Action(object):
 
     def __str__(self):
         return self.name
+
+    def __eq__(self, other):
+        return self.name == other.name
 
 
 class World(object):
@@ -300,7 +307,7 @@ class World2DGrid(World):
     von_neumann = ((-1, 0), (0, -1), (1, 0), (0, 1))
     
     def __init__(self, width=25, height=25, cell=20, tor=False,
-                 nhood = moore):
+                 nhood=moore, grid=True):
         World.__init__(self)
         self._width = width
         self._height = height
@@ -313,9 +320,10 @@ class World2DGrid(World):
         self._grid = [[[] for c in range(width)] for l in range(height)]
 
         #visual grid
-        shape = shapes.Grid(width*cell, height*cell, cell)
-        shape.add_to_batch(self._batch)
-        self._shapes.append(shape)
+        if (grid):
+            shape = shapes.Grid(width*cell, height*cell, cell)
+            shape.add_to_batch(self._batch)
+            self._shapes.append(shape)
 
     def add_object(self, obj):
         #check bounds
@@ -411,8 +419,11 @@ class World2DGrid(World):
         return len(self._grid[y][x]) == 0
 
     def has_object_type_at(self, x, y, objtype):
+        if self._tor:
+            x = x % self._width
+            y = y % self._height
         for obj in self._grid[y][x]:
-            if type(obj) == objtype:
+            if isinstance(obj, objtype):
                 return True
 
         return False

@@ -136,5 +136,5 @@ class Sprite(Shape):
 
     def add_to_batch(self, batch):
         self._sprite.batch = batch
-            
-        
+
+

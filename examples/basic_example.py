@@ -34,7 +34,13 @@ if __name__ == '__main__':
     shape = shapes.Triangle(0, -10, 20, 0, 0, 10, color=('c3B', (200,0,0)))
     obj2.add_shape(shape)
     world.add_object(obj2)
-    obj2.ang_velocity = 60
+    obj2.ang_velocity = 120
     obj2.velocity = 100
 
+    obj3 = pyafai.Object(300,300)
+    shape = shapes.Sprite('resources/pac_man.png')
+    obj3.add_shape(shape)
+    world.add_object(obj3)
+
     pyafai.run()
+

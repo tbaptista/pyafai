@@ -1,3 +1,9 @@
+#!/usr/bin/env python
+#-----------------------------------------------------------------------------
+# Copyright (c) 2014-2015 Tiago Baptista
+# All rights reserved.
+#-----------------------------------------------------------------------------
+
 from setuptools import setup
 
 with open('README.rst', encoding='utf-8') as f:
