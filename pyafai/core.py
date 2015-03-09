@@ -1,5 +1,5 @@
-#coding: utf-8
-#-----------------------------------------------------------------------------
+# coding: utf-8
+# -----------------------------------------------------------------------------
 # Copyright (c) 2014 Tiago Baptista
 # All rights reserved.
 #-----------------------------------------------------------------------------
@@ -21,7 +21,7 @@ from . import shapes
 
 class Object(object):
     """This class represents a generic object in the world"""
-    
+
     def __init__(self, x=0, y=0, angle=0.0):
         self.x = x
         self.y = y
@@ -33,8 +33,8 @@ class Object(object):
 
     def __repr__(self):
         return str(type(self).__name__) + "(" + ",".join((str(self.x),
-                                                 str(self.y),
-                                                 str(self.angle))) + ")"
+                                                          str(self.y),
+                                                          str(self.angle))) + ")"
 
     @property
     def is_body(self):
@@ -63,11 +63,11 @@ class Object(object):
         pyglet.gl.glRotatef(self.angle, 0, 0, 1)
         self._batch.draw()
         pyglet.gl.glPopMatrix()
-        
+
     def move_to(self, x, y):
         self.x = x
         self.y = y
-        
+
     def translate(self, tx, ty):
         self.x += tx
         self.y += ty
@@ -99,6 +99,7 @@ class Object(object):
 
 class Agent(object):
     """This Class represents an agent in the world"""
+
     def __init__(self):
         self._body = None
         self._actions = {}
@@ -124,7 +125,7 @@ class Agent(object):
 
     def add_action(self, action):
         self._actions[action.name] = action
-    
+
     def update(self, delta):
         self._update_perceptions()
         actions = self._think(delta)
@@ -134,11 +135,11 @@ class Agent(object):
 
     def kill(self):
         self._dead = True
-        
+
     def _update_perceptions(self):
         for p in self._perceptions.values():
             p.update(self)
-    
+
     def _think(self, delta):
         return []
 
@@ -146,7 +147,7 @@ class Agent(object):
 class Perception(object):
     """A generic perception class."""
 
-    def __init__(self, type = int, name = "None"):
+    def __init__(self, type=int, name="None"):
         self.value = type()
         self.type = type
         self.name = name
@@ -164,7 +165,7 @@ class Perception(object):
 class Action(object):
     """A generic action class."""
 
-    def __init__(self, name = "None"):
+    def __init__(self, name="None"):
         self.name = name
 
     def execute(self, agent):
@@ -179,16 +180,17 @@ class Action(object):
 
 class World(object):
     """The environment where to put our agents and objects"""
+
     def __init__(self):
         self._batch = pyglet.graphics.Batch()
         self._agents = []
         self._dead_agents = []
         self._objects = []
         self._shapes = []
-        self.paused = False
-        pyglet.clock.schedule_interval(self.update, 1/60.0)
+        self.paused = True
+        pyglet.clock.schedule_interval(self.update, 1 / 60.0)
 
-    
+
     def add_object(self, obj):
         if isinstance(obj, Object):
             self._objects.append(obj)
@@ -202,7 +204,7 @@ class World(object):
         else:
             print("Trying tp remove an object that is not present in the\
              world, or is the body of an agent!")
-        
+
     def add_agent(self, agent):
         if isinstance(agent, Agent):
             agent.world = self
@@ -246,18 +248,18 @@ class World(object):
     def _remove_dead_agents(self):
         for a in self._dead_agents:
             self._remove_agent(a)
-    
+
     def draw(self):
         self._batch.draw()
-        
+
     def draw_objects(self):
         for obj in self._objects:
             obj.draw()
-            
+
 
 class World2D(World):
     """A 2D continuous and closed world"""
-    
+
     def __init__(self, width=500, height=500):
         World.__init__(self)
         self.width = width
@@ -298,14 +300,15 @@ class World2D(World):
                 return obj
 
         return None
-        
-        
+
+
 class World2DGrid(World):
     """A 2D Grid world, closed, and optionally toroidal"""
 
-    moore = ((-1,-1), (0,-1), (1,-1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1))
+    moore = ((-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1),
+             (1, 1))
     von_neumann = ((-1, 0), (0, -1), (1, 0), (0, 1))
-    
+
     def __init__(self, width=25, height=25, cell=20, tor=False,
                  nhood=moore, grid=True):
         World.__init__(self)
@@ -321,45 +324,45 @@ class World2DGrid(World):
 
         #visual grid
         if (grid):
-            shape = shapes.Grid(width*cell, height*cell, cell)
+            shape = shapes.Grid(width * cell, height * cell, cell)
             shape.add_to_batch(self._batch)
             self._shapes.append(shape)
 
     def add_object(self, obj):
         #check bounds
         if not self._tor:
-            if obj.x > self._width-1:
-                obj.x = self._width-1
-            if obj.y > self._height-1:
-                obj.y = self._height-1
+            if obj.x > self._width - 1:
+                obj.x = self._width - 1
+            if obj.y > self._height - 1:
+                obj.y = self._height - 1
             if obj.x < 0:
                 obj.x = 0
             if obj.y < 0:
                 obj.y = 0
         else:
-            if obj.x > self._width-1 or obj.x < 0:
+            if obj.x > self._width - 1 or obj.x < 0:
                 obj.x = obj.x % self._width
-            if obj.y > self._height-1 or obj.y < 0:
+            if obj.y > self._height - 1 or obj.y < 0:
                 obj.y = obj.y % self._height
 
         World.add_object(self, obj)
-        self._grid[int(obj.y)][int(obj.x)].append(obj)
+        self._grid[int(round(obj.y))][int(round(obj.x))].append(obj)
 
     def remove_object(self, obj):
         World.remove_object(self, obj)
         if not obj.is_body:
-            self._grid[int(obj.y)][int(obj.x)].remove(obj)
+            self._grid[int(round(obj.y))][int(round(obj.x))].remove(obj)
 
     def process_agents(self, delta):
         for a in self._agents:
             if not a.is_dead:
                 #remove body from grid
-                self._grid[int(a.body.y)][int(a.body.x)].remove(a.body)
+                self._grid[int(round(a.body.y))][int(round(a.body.x))].remove(a.body)
 
                 a.update(delta)
 
                 #re-add to grid
-                self._grid[int(a.body.y)][int(a.body.x)].append(a.body)
+                self._grid[int(round(a.body.y))][int(round(a.body.x))].append(a.body)
             else:
                 self._dead_agents.append(a)
 
@@ -370,29 +373,30 @@ class World2DGrid(World):
 
             #update all objects
             for obj in self._objects:
+
                 #remove from _grid
-                self._grid[int(obj.y)][int(obj.x)].remove(obj)
+                self._grid[int(round(obj.y))][int(round(obj.x))].remove(obj)
 
                 obj.update(delta)
 
                 #check bounds
                 if not self._tor:
-                    if obj.x > self._width-1:
-                        obj.x = self._width-1
-                    if obj.y > self._height-1:
-                        obj.y = self._height-1
+                    if obj.x > self._width - 1:
+                        obj.x = self._width - 1
+                    if obj.y > self._height - 1:
+                        obj.y = self._height - 1
                     if obj.x < 0:
                         obj.x = 0
                     if obj.y < 0:
                         obj.y = 0
                 else:
-                    if obj.x > self._width-1 or obj.x < 0:
-                        obj.x = obj.x % self._width
-                    if obj.y > self._height-1 or obj.y < 0:
-                        obj.y = obj.y % self._height
+                    if obj.x > self._width - 0.5 or obj.x < -0.5:
+                        obj.x = round(obj.x) % self._width
+                    if obj.y > self._height - 0.5 or obj.y < -0.5:
+                        obj.y = round(obj.y) % self._height
 
                 #re-add to _grid
-                self._grid[int(obj.y)][int(obj.x)].append(obj)
+                self._grid[int(round(obj.y))][int(round(obj.x))].append(obj)
 
             #remove dead agents
             self._remove_dead_agents()
@@ -416,12 +420,12 @@ class World2DGrid(World):
         return self._height
 
     def is_empty(self, x, y):
-        return len(self._grid[y][x]) == 0
+        return len(self._grid[int(round(y))][int(round(x))]) == 0
 
     def has_object_type_at(self, x, y, objtype):
         if self._tor:
-            x = x % self._width
-            y = y % self._height
+            x = int(round(x)) % self._width
+            y = int(round(y)) % self._height
         for obj in self._grid[y][x]:
             if isinstance(obj, objtype):
                 return True
@@ -429,10 +433,10 @@ class World2DGrid(World):
         return False
 
     def get_cell(self, x, y):
-        return (x // self.cell, y // self.cell)
+        return x // self.cell, y // self.cell
 
     def get_cell_contents(self, x, y):
-        return self._grid[y][x]
+        return self._grid[int(round(y))][int(round(x))]
 
     def get_neighbours(self, x, y):
         """Returns a list of all the objects that are neighbours of the cell
@@ -443,7 +447,9 @@ class World2DGrid(World):
         :return: A list with the neighbour objects.
         """
         result = []
-        for dx,dy in self._nhood:
+        x = int(round(x))
+        y = int(round(y))
+        for dx, dy in self._nhood:
             x1 = x + dx
             y1 = y + dy
             if not self._tor and 0 <= x1 < self._width and 0 <= y1 < self._height:
@@ -456,11 +462,10 @@ class World2DGrid(World):
         return result
 
 
-
 class Display(pyglet.window.Window):
     """Class used to display the world"""
 
-    def __init__(self, world, multisampling = True):
+    def __init__(self, world, multisampling=True):
         if multisampling:
             #Enable multismapling if available on the hardware
             platform = pyglet.window.get_platform()
@@ -484,10 +489,10 @@ class Display(pyglet.window.Window):
 
         if multisampling:
             #Init the pyglet super class
-            super(Display, self).__init__(width, height, caption = 'IIA',
+            super(Display, self).__init__(width, height, caption='IIA',
                                           config=config)
         else:
-            super(Display, self).__init__(width, height, caption = 'IIA')
+            super(Display, self).__init__(width, height, caption='IIA')
 
         self.show_fps = False
         self.fps_display = pyglet.clock.ClockDisplay()
@@ -501,13 +506,13 @@ class Display(pyglet.window.Window):
     def on_draw(self):
         #clear window
         self.clear()
-        
+
         #draw world
         self.world.draw()
-        
+
         #draw objects
         self.world.draw_objects()
-                
+
         #show fps
         if self.show_fps:
             self.fps_display.draw()
@@ -516,7 +521,7 @@ class Display(pyglet.window.Window):
         super(Display, self).on_key_press(symbol, modifiers)
 
         if symbol == key.F:
-            self.show_fps = not(self.show_fps)
+            self.show_fps = not (self.show_fps)
         elif symbol == key.P:
             self.world.pause_toggle()
             if self.world.paused:
