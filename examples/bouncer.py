@@ -32,10 +32,10 @@ class BouncerObject(objects.SimplePhysicsObject):
         super(BouncerObject, self).update(delta)
 
         if self.x > self._w or self.x < 0:
-            self.angle = self.angle + 180 - 2*self.angle
+            self.angle = 180 - self.angle
 
         if self.y > self._h or self.y < 0:
-            self.angle = self.angle + 180 - 2*(self.angle-90)
+            self.angle = -self.angle
 
 
 if __name__ == '__main__':
