@@ -205,11 +205,10 @@ class BraitenbergDisplay(pyafai.Display):
     def on_mouse_release(self, x, y, button, modifiers):
         super(BraitenbergDisplay, self).on_mouse_release(x, y, button, modifiers)
 
-        if button == mouse.RIGHT:
+        if button == mouse.LEFT:
             light = LightSource(x, y)
             self.world.add_light(light)
 
-        
 
 def setup_random(world, n_lights, n_vehicles, vehicle_type):
     for i in range(n_vehicles):
