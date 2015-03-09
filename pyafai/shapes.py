@@ -33,7 +33,9 @@ class Shape(object):
     @color.setter
     def color(self, value):
         if self.vertexlist is not None:
-            self.vertexlist.colors[:] = [value] * self.vertexlist.get_size()
+            # This will only work if the color is using the same number of
+            # components
+            self.vertexlist.colors[:] = value[1] * self.vertexlist.get_size()
 
         self._color = value
 
