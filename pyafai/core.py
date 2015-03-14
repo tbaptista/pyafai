@@ -13,7 +13,7 @@ from __future__ import division
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
 
-#Try to import the pyglet package
+# Try to import the pyglet package
 import pyglet
 import pyglet.window.key as key
 from . import shapes
@@ -114,7 +114,8 @@ class Agent(object):
     @body.setter
     def body(self, value):
         self._body = value
-        value.agent = self
+        if value is not None:
+            value.agent = self
 
     @property
     def is_dead(self):
@@ -135,6 +136,10 @@ class Agent(object):
 
     def kill(self):
         self._dead = True
+        body = self.body
+        self.body = None
+        body.agent = None
+        self.world.remove_object(body)
 
     def _update_perceptions(self):
         for p in self._perceptions.values():
@@ -195,15 +200,13 @@ class World(object):
         if isinstance(obj, Object):
             self._objects.append(obj)
         else:
-            print("Trying to add an object to the world that is not of type\
-                  Object!")
+            print("Trying to add an object to the world that is not of type Object!")
 
     def remove_object(self, obj):
         if not obj.is_body and obj in self._objects:
             self._objects.remove(obj)
         else:
-            print("Trying tp remove an object that is not present in the\
-             world, or is the body of an agent!")
+            print("Trying tp remove an object that is not present in the world, or is the body of an agent!")
 
     def add_agent(self, agent):
         if isinstance(agent, Agent):
@@ -212,15 +215,12 @@ class World(object):
             if agent.body != None:
                 self.add_object(agent.body)
         else:
-            print("Trying to add an agent to the world that is not of type\
-                  Agent!")
+            print("Trying to add an agent to the world that is not of type Agent!")
 
     def _remove_agent(self, agent):
         if agent in self._agents:
             agent.world = None
-            agent.body.agent = None
             self._agents.remove(agent)
-            self.remove_object(agent.body)
 
     def pause_toggle(self):
         self.paused = not self.paused
@@ -440,15 +440,15 @@ class World2DGrid(World):
 
     def get_neighbours(self, x, y):
         """Returns a list of all the objects that are neighbours of the cell
-        at (x,y). The neighbourhood used is defined in _nhood.
+        at (x, y). The neighbourhood used is defined in _nhood.
 
         :param x: The cell's x coordinate (column).
         :param y: The cell's y coordinate (line).
         :return: A list with the neighbour objects.
         """
         result = []
-        x = int(round(x))
-        y = int(round(y))
+        x = int(x+0.5)
+        y = int(y+0.5)
         for dx, dy in self._nhood:
             x1 = x + dx
             y1 = y + dy
@@ -458,6 +458,30 @@ class World2DGrid(World):
                 x1 = x1 % self._width
                 y1 = y1 % self._height
                 result.extend(self._grid[y1][x1])
+
+        return result
+
+    def get_neighbourhood(self, x, y):
+        """Returns a list of all the neighbour cells of a given cell at (x, y).
+        Uses the neighbourhood defined in _nhood.
+
+        :param x: The cell's x coordinate (column).
+        :param y: The cell's y coordinate (line).
+        :return: A list of tuples with (x, y) coordinates of the neighbor cells.
+        """
+
+        result = []
+        x = int(x + 0.5)
+        y = int(y + 0.5)
+        for dx, dy in self._nhood:
+            x1 = x + dx
+            y1 = y + dy
+            if not self._tor and 0 <= x1 < self._width and 0 <= y1 < self._height:
+                result.append((x1, y1))
+            elif self._tor:
+                x1 = x1 % self._width
+                y1 = y1 % self._height
+                result.append((x1, y1))
 
         return result
 
