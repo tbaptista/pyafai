@@ -14,9 +14,9 @@ __docformat__ = 'restructuredtext'
 __version__ = '1.0'
 __author__ = 'Tiago Baptista'
 
-#Allow the import of the framework from one directory down the hierarchy
+# Allow the import of the framework from one directory down the hierarchy
 import sys
-sys.path.insert(1,'..')
+sys.path.insert(1, '..')
 
 import pyglet
 import pyafai
@@ -173,15 +173,15 @@ class Wanderer(pyafai.Agent):
     def set_target(self, x, y):
         self._target = (x, y)
 
-        #invalidate existing path, if any
+        # invalidate existing path, if any
         if self._path is not None:
             self._path = None
 
     def _think(self, delta):
-        #If we are not already moving on a path
+        # if we are not already moving on a path
         if self._path is None:
             if self._target is not None:
-                #calculate path using A*
+                # calculate path using A*
                 astar = AStar(self.world.graph)
                 source = self.world.get_node_id(self.body.x, self.body.y)
                 dest = self.world.get_node_id(self._target[0], self._target[1])

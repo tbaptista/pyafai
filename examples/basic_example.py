@@ -13,7 +13,7 @@ from __future__ import division
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
 
-#Allow the import of the framework from one directory down the hierarchy
+# Allow the import of the framework from one directory down the hierarchy
 import sys
 sys.path.insert(1,'..')
 
