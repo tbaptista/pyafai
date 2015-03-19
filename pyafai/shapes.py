@@ -88,11 +88,12 @@ class Triangle(Shape):
         
 
 class Circle(Shape):
-    def __init__(self, r, cx = 0, cy = 0, color = ('c3B', (255,255,255))):
+    def __init__(self, r, cx = 0, cy = 0, color = ('c3B', (255,255,255)),
+                 res = 1):
         Shape.__init__(self, color)
         
         self.gl_type = pyglet.gl.GL_TRIANGLES
-        sides = int(pi*r)
+        sides = int(pi*r*res)
         dang = 2*pi / sides
         ang = 0
         x = math.cos(ang) * r
