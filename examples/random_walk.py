@@ -1,8 +1,8 @@
-#coding: utf-8
-#-----------------------------------------------------------------------------
+# coding: utf-8
+# -----------------------------------------------------------------------------
 # Copyright (c) 2014 Tiago Baptista
 # All rights reserved.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 """
 Example implementation of an Object type that bounces on the limits of the world
@@ -13,7 +13,7 @@ from __future__ import division
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
 
-#Allow the import of the framework from one directory down the hierarchy
+# Allow the import of the framework from one directory down the hierarchy
 import sys
 sys.path.insert(1,'..')
 

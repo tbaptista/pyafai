@@ -199,7 +199,7 @@ class BraitenbergDisplay(pyafai.Display):
     def on_key_press(self, symbol, modifiers):
         super(BraitenbergDisplay, self).on_key_press(symbol, modifiers)
 
-        if symbol == key.I:
+        if symbol == key.L:
             self.world.show_influence_map = not(self.world.show_influence_map)
 
     def on_mouse_release(self, x, y, button, modifiers):
@@ -221,10 +221,11 @@ def setup_random(world, n_lights, n_vehicles, vehicle_type):
         l = LightSource(random.randint(50, world.width - 50),
                         random.randint(50, world.height - 50),
                         100)
-        if (i < n_lights - 1):
+        if i < n_lights - 1:
             world.add_light(l, False)
         else:
             world.add_light(l, True)
+
 
 def setup_one(vehicle_type):
 
@@ -232,9 +233,9 @@ def setup_one(vehicle_type):
     v.body.angle = 90
     world.add_agent(v)
 
-
     l = LightSource(250, 300, 500)
     world.add_light(l)
+
 
 if __name__ == '__main__':
     world = BraitenbergWorld(500, 500, sector=5)
@@ -242,7 +243,7 @@ if __name__ == '__main__':
     display = BraitenbergDisplay(world)
 
     #create lights and vehicles at random locations
-    #setup_random(world, 1, 5, MyVehicle1)
-    setup_one(Vehicle3a)
+    setup_random(world, 5, 5, MyVehicle1a)
+    #setup_one(Vehicle2b)
 
     pyafai.run()
