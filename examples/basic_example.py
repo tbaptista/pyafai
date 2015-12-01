@@ -1,11 +1,11 @@
-#coding: utf-8
-#-----------------------------------------------------------------------------
+# coding: utf-8
+# -----------------------------------------------------------------------------
 # Copyright (c) 2014 Tiago Baptista
 # All rights reserved.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 """
-Basic example of the use of the pyafai framework
+Basic example of the use of the pyafai framework.
 """
 
 from __future__ import division

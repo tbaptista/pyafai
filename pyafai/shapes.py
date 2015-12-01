@@ -1,8 +1,8 @@
-#coding: utf-8
-#-----------------------------------------------------------------------------
+# coding: utf-8
+# -----------------------------------------------------------------------------
 # Copyright (c) 2014 Tiago Baptista
 # All rights reserved.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 """This module contains helper classes to draw basic shapes in pyglet"""
 
@@ -40,7 +40,7 @@ class Shape(object):
         self._color = value
 
     def add_to_batch(self, batch):
-        if self.vertexlist == None:
+        if self.vertexlist is None:
             n = len(self.vertices[1]) // 2
             self.vertexlist = batch.add(n, self.gl_type, None, self.vertices,
                                         (self.color[0], self.color[1] * n))
@@ -56,7 +56,6 @@ class Shape(object):
         return res
 
 
-    
 class Rect(Shape):
     def __init__(self, w, h, x=0, y=0, color=('c3B', (255,255,255))):
         Shape.__init__(self, color)
@@ -70,7 +69,8 @@ class Rect(Shape):
         
         self.gl_type = pyglet.gl.GL_QUADS
         self.vertices = ('v2f', (x1, y1, x2, y1, x2, y2, x1, y2))
-        
+
+
 class Line(Shape):
     def __init__(self, x1, y1, x2, y2, color = ('c3B', (255,255,255))):
         Shape.__init__(self, color)
@@ -111,18 +111,18 @@ class Circle(Shape):
 
 
 class Grid(Shape):
-    def __init__(self, width, height, cell, color = ('c3B', (200,200,200))):
+    def __init__(self, width, height, cell, color=('c3B', (200,200,200))):
         Shape.__init__(self, color)
 
         vertices = []
         lines = width//cell + height // cell + 2
         self.gl_type = pyglet.gl.GL_LINES
 
-        #vertical lines
+        # vertical lines
         for i in range(width//cell + 1):
             vertices.extend([i*cell, 0, i*cell, height])
 
-        #horizontal lines
+        # horizontal lines
         for i in range(height//cell + 1):
             vertices.extend([0, i*cell, width, i*cell])
 
@@ -139,5 +139,4 @@ class Sprite(Shape):
 
     def add_to_batch(self, batch):
         self._sprite.batch = batch
-
 

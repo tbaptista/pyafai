@@ -42,7 +42,6 @@ class CircularInfluence(Influence):
         self.static = static
         self.limit = limit
 
-
         if static and degrade != 0.0:
             print("A static influence can not have a degrade value different \
                   than 0! Value set to 0.")
@@ -54,7 +53,7 @@ class CircularInfluence(Influence):
         
     def update(self, delta):
         if self.degrade != 0 and self.strength > 0:
-            self.strength -=  self.degrade * delta
+            self.strength -= self.degrade * delta
             if self.strength < self.limit:
                 self.strength = 0
             return True
@@ -113,7 +112,6 @@ class InfluenceMap(object):
 
     def get_grid_value(self, x, y):
         return self._imap[y][x]
-        
         
     def update_influences(self, delta):
         res = False

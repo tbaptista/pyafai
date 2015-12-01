@@ -40,8 +40,8 @@ class LightSource(pyafai.Object):
     def __init__(self, x, y, radius=100):
         super(LightSource, self).__init__(x, y)
         
-        self.inf = influence.CircularInfluence(x, y, radius = radius,
-                                               limit = 0.001)
+        self.inf = influence.CircularInfluence(x, y, radius=radius,
+                                               limit=0.001)
         #use a quadratic diffuse function
         self.inf.func = influence.CircularInfluence.light_diffuse
         

@@ -1,3 +1,14 @@
+v1.0RC1, 2015-12-01
+    * New __eq__ operator for Perception and Action
+    * Add option to disable the grid display in World2DGrid
+    * Add sprite to basic example
+    * Fix: color setter on the base Shape class
+    * World is now created in pause mode by default
+    * The calculation of the location of objects in the grid world has changed. Now, cell coordinates are rounded and not just floored.
+    * When an agent is killed, its body is immediately removed form the world
+    * New method in the World2DGrid to get the neighborhood of a given cell
+    * Allow to change the resolution of the circle shape
+
 v1.0b11, 2015-02-24
     * Add Action class. Agent _think method now optionally returns a list of Action objects.
     * Fix: On grid world, convert object coordinates to int, to prevent indexing errors.
