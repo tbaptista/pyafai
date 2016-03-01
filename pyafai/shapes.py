@@ -7,18 +7,19 @@
 """This module contains helper classes to draw basic shapes in pyglet"""
 
 from __future__ import division
+import pyglet
+import math
+from math import pi
 
 __docformat__ = 'restructuredtext'
 __author__ = 'Tiago Baptista'
 
-import pyglet
-import math
-from math import pi
 
 class Shape(object):
     def __init__(self, color=('c3B', (255,255,255))):
         self.gl_type = None
         self.vertices = None
+        self.indices = None
         self._color = color
         self.vertexlist = None
 
@@ -39,11 +40,16 @@ class Shape(object):
 
         self._color = value
 
-    def add_to_batch(self, batch):
+    def add_to_batch(self, batch: pyglet.graphics.Batch):
         if self.vertexlist is None:
             n = len(self.vertices[1]) // 2
-            self.vertexlist = batch.add(n, self.gl_type, None, self.vertices,
-                                        (self.color[0], self.color[1] * n))
+            if self.indices is None:
+                self.vertexlist = batch.add(n, self.gl_type, None, self.vertices,
+                                            (self.color[0], self.color[1] * n))
+            else:
+                self.vertexlist = batch.add_indexed(n, self.gl_type, None,
+                                                    self.indices, self.vertices,
+                                                    (self.color[0], self.color[1] * n))
             return self.vertexlist
         else:
             print("This shape was already added to a Batch, please do not \
@@ -57,7 +63,7 @@ class Shape(object):
 
 
 class Rect(Shape):
-    def __init__(self, w, h, x=0, y=0, color=('c3B', (255,255,255))):
+    def __init__(self, w, h, x=0, y=0, color=('c3B', (255, 255, 255))):
         Shape.__init__(self, color)
         
         w = w/2
@@ -72,7 +78,7 @@ class Rect(Shape):
 
 
 class Line(Shape):
-    def __init__(self, x1, y1, x2, y2, color = ('c3B', (255,255,255))):
+    def __init__(self, x1, y1, x2, y2, color=('c3B', (255, 255, 255))):
         Shape.__init__(self, color)
         
         self.gl_type = pyglet.gl.GL_LINES
@@ -80,7 +86,7 @@ class Line(Shape):
         
 
 class Triangle(Shape):
-    def __init__(self, x1, y1, x2, y2, x3, y3, color = ('c3B', (255,255,255))):
+    def __init__(self, x1, y1, x2, y2, x3, y3, color=('c3B', (255, 255, 255))):
         Shape.__init__(self, color)
         
         self.gl_type = pyglet.gl.GL_TRIANGLES
@@ -88,8 +94,8 @@ class Triangle(Shape):
         
 
 class Circle(Shape):
-    def __init__(self, r, cx = 0, cy = 0, color = ('c3B', (255,255,255)),
-                 res = 1):
+    def __init__(self, r, cx=0, cy=0, color=('c3B', (255, 255, 255)),
+                 res=1):
         Shape.__init__(self, color)
         
         self.gl_type = pyglet.gl.GL_TRIANGLES
@@ -98,11 +104,11 @@ class Circle(Shape):
         ang = 0
         x = math.cos(ang) * r
         y = math.sin(ang) * r
-        vertices = [0,0,r,0,x,y]
+        vertices = [0, 0, r, 0, x, y]
         for i in range(sides+1):
             x = math.cos(ang) * r
             y = math.sin(ang) * r
-            vertices.extend([0,0,vertices[-2], vertices[-1],x,y])
+            vertices.extend([0, 0, vertices[-2], vertices[-1], x, y])
             ang += dang
 
         self.vertices = ('v2f', vertices)
@@ -110,8 +116,22 @@ class Circle(Shape):
         self.vertices = ('v2f', vertices)
 
 
+class Pointer(Shape):
+    def __init__(self, size, x=0, y=0, color=('c3B', (255, 255, 255))):
+        super(Pointer, self).__init__(color)
+
+        self.gl_type = pyglet.gl.GL_TRIANGLES
+        hsize = size / 2
+        self.vertices = ('v2f', (x, y,
+                                 x - hsize, y - hsize,
+                                 x + size, 0,
+                                 -hsize, hsize))
+        self.indices = [0, 1, 2,
+                        0, 2, 3]
+
+
 class Grid(Shape):
-    def __init__(self, width, height, cell, color=('c3B', (200,200,200))):
+    def __init__(self, width, height, cell, color=('c3B', (200, 200, 200))):
         Shape.__init__(self, color)
 
         vertices = []
