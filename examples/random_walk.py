@@ -1,6 +1,6 @@
 # coding: utf-8
 # -----------------------------------------------------------------------------
-# Copyright (c) 2014 Tiago Baptista
+# Copyright (c) 2014-2016 Tiago Baptista
 # All rights reserved.
 # -----------------------------------------------------------------------------
 
@@ -31,7 +31,7 @@ class RandomWalker(pyafai.Agent):
         super(RandomWalker, self).__init__()
 
         obj = bouncer.BouncerObject(WORLD_WIDTH, WORLD_HEIGHT, x, y)
-        shape = shapes.Triangle(0, -10, 20, 0, 0, 10, color=color)
+        shape = shapes.Pointer(10, color=color)
         obj.add_shape(shape)
         obj.velocity = vel
         self.body = obj

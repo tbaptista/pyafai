@@ -1,5 +1,6 @@
 v1.0.0-rc.2, TBD
     * Switch to Semantic Versioning 2.0.0 (http://semver.org/spec/v2.0.0.html)
+    * Change licensing to Apache License 2.0
 
 v1.0rc1, 2015-12-01
     * New __eq__ operator for Perception and Action

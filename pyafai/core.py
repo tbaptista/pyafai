@@ -1,7 +1,18 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
-# Copyright (c) 2014-2015 Tiago Baptista
-# All rights reserved.
+# Copyright (c) 2014-2016 Tiago Baptista
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 # -----------------------------------------------------------------------------
 
 """
@@ -30,6 +41,7 @@ class Object(object):
         self._shapes = []
         self._is_body = False
         self._agent = None
+        self.scale = 1.0
 
     def __repr__(self):
         return str(type(self).__name__) + "(" + ",".join((str(self.x),
@@ -57,10 +69,15 @@ class Object(object):
         shape.add_to_batch(self._batch)
         self._shapes.append(shape)
 
+    def clear_shapes(self):
+        self._shapes.clear()
+
     def draw(self):
         pyglet.gl.glPushMatrix()
         pyglet.gl.glTranslatef(self.x, self.y, 0)
         pyglet.gl.glRotatef(self.angle, 0, 0, 1)
+        if self.scale != 1:
+            pyglet.gl.glScalef(self.scale, self.scale, self.scale)
         self._batch.draw()
         pyglet.gl.glPopMatrix()
 
@@ -135,11 +152,14 @@ class Agent(object):
                 action.execute(self)
 
     def kill(self):
-        self._dead = True
-        body = self.body
-        self.body = None
-        body.agent = None
-        self.world.remove_object(body)
+        if not self._dead:
+            self._dead = True
+            body = self.body
+            self.body = None
+            body.agent = None
+            self.world.remove_object(body)
+        else:
+            print("Warning: Trying to kill an already dead agent!")
 
     def _update_perceptions(self):
         for p in self._perceptions.values():
