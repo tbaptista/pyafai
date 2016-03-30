@@ -15,7 +15,7 @@ soon.
 Dependencies
 ------------
 - Python 3 (http://www.python.org) (should also work on Python 2.7)
-- pyglet (http://www.pyglet.org) (tested on version 1.2)
+- pyglet (http://www.pyglet.org)
 
 Authors
 -------
