@@ -15,14 +15,6 @@ Press the I key to toggle the display of the lights' influence map.
 Use the left mouse button to add lights to the environment.
 """
 
-__docformat__ = 'restructuredtext'
-__version__ = '1.0'
-__author__ = 'Tiago Baptista'
-
-#Allow the import of the framework from one directory down the hierarchy
-import sys
-sys.path.insert(1, '..')
-
 import pyafai
 from pyafai import influence
 from pyafai import shapes
@@ -31,6 +23,10 @@ import math
 import pyglet.window.key as key
 import pyglet.window.mouse as mouse
 import random
+
+__docformat__ = 'restructuredtext'
+__version__ = '1.0.0'
+__author__ = 'Tiago Baptista'
 
 RAD2DEG = 180.0 / math.pi
 DEG2RAD = math.pi / 180
@@ -42,7 +38,7 @@ class LightSource(pyafai.Object):
         
         self.inf = influence.CircularInfluence(x, y, radius=radius,
                                                limit=0.001)
-        #use a quadratic diffuse function
+        # use a quadratic diffuse function
         self.inf.func = influence.CircularInfluence.light_diffuse
         
         self.add_shape(shapes.Circle(4, color=('c3B', (210,210,0))))
@@ -188,7 +184,6 @@ class BraitenbergWorld(pyafai.World2D):
 
         if self.show_influence_map:
             self._imap_display.draw()
-
 
     def get_light(self, x, y):
         return self._imap.get_value(x, y)
