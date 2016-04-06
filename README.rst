@@ -6,7 +6,8 @@ Intelligence course at the Department of Informatics Engineering of the
 University of Coimbra.
 
 Tutorials and documentation are currently in preparation, and should be released
-soon.
+soon. In the meantime, the examples directory contains some simple examples of
+the use of pyafai.
 
 | Copyright (c) 2014-2016 Tiago Baptista - baptista@dei.uc.pt
 | Licensed under the Apache License, Version 2.0 (see LICENSE.txt)
