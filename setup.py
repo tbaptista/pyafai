@@ -31,7 +31,7 @@ setup(
     version=version['__version__'],
     description='Python Agent Framework for Artificial Intelligence',
     long_description = long_description,
-    url='none',
+    url='https://github.com/tbaptista/pyafai',
     author='Tiago Baptista',
     author_email='baptista@dei.uc.pt',
     license='Apache License 2.0',
