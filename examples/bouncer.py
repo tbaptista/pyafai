@@ -9,11 +9,6 @@ Example implementation of an Object type that bounces on the limits of the world
 """
 
 from __future__ import division
-
-# Allow the import of the framework from one directory down the hierarchy
-import sys
-sys.path.insert(1,'..')
-
 import pyafai
 from pyafai import shapes
 from pyafai import objects

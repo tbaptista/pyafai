@@ -1,9 +1,8 @@
-#! /usr/bin/env python
-#coding: utf-8
-#-----------------------------------------------------------------------------
+# -*- coding: utf-8 -*-
+# -----------------------------------------------------------------------------
 # Copyright (c) 2014 Tiago Baptista
 # All rights reserved.
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 """
 Braitenberg vehicles simulation using the pyafai framework. Implementation of
@@ -11,7 +10,7 @@ vehicles 2a, 2b, 3a, and 3b. There are also two extra vehicles that are not
 in the original Valentino Braitenberg's vehicle definitions.
 
 Usage:
-Press the I key to toggle the display of the lights' influence map.
+Press the L key to toggle the display of the lights' influence map.
 Use the left mouse button to add lights to the environment.
 """
 

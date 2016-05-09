@@ -20,14 +20,12 @@ An agent framework for the Introduction to Artificial Intelligence course.
 """
 
 from __future__ import division
-
-__docformat__ = 'restructuredtext'
-__author__ = 'Tiago Baptista'
-
-# Try to import the pyglet package
 import pyglet
 import pyglet.window.key as key
 from . import shapes
+
+__docformat__ = 'restructuredtext'
+__author__ = 'Tiago Baptista'
 
 
 class Object(object):
@@ -118,6 +116,7 @@ class Agent(object):
     """This Class represents an agent in the world"""
 
     def __init__(self):
+        self.keep_body_on_death = False
         self._body = None
         self._actions = {}
         self._perceptions = {}
@@ -154,10 +153,6 @@ class Agent(object):
     def kill(self):
         if not self._dead:
             self._dead = True
-            body = self.body
-            self.body = None
-            body.agent = None
-            self.world.remove_object(body)
         else:
             print("Warning: Trying to kill an already dead agent!")
 
@@ -219,27 +214,32 @@ class World(object):
         if isinstance(obj, Object):
             self._objects.append(obj)
         else:
-            print("Trying to add an object to the world that is not of type Object!")
+            print("Trying to add an object to the world that is not of type \
+            Object!")
 
     def remove_object(self, obj):
         if not obj.is_body and obj in self._objects:
             self._objects.remove(obj)
         else:
-            print("Trying tp remove an object that is not present in the world, or is the body of an agent!")
+            print("Trying to remove an object that is not present in the \
+            world, or is the body of an agent!")
 
     def add_agent(self, agent):
         if isinstance(agent, Agent):
             agent.world = self
             self._agents.append(agent)
-            if agent.body != None:
+            if agent.body is not None:
                 self.add_object(agent.body)
         else:
-            print("Trying to add an agent to the world that is not of type Agent!")
+            print("Trying to add an agent to the world that is not of type \
+            Agent!")
 
     def _remove_agent(self, agent):
         if agent in self._agents:
             agent.world = None
             self._agents.remove(agent)
+        else:
+            print("Warning: Trying to remove an agent that is not in the list.")
 
     def pause_toggle(self):
         self.paused = not self.paused
@@ -269,6 +269,13 @@ class World(object):
     def _remove_dead_agents(self):
         for a in self._dead_agents:
             self._remove_agent(a)
+            body = a.body
+            a.body = None
+            body.agent = None
+            if not a.keep_body_on_death:
+                self.remove_object(body)
+
+        self._dead_agents.clear()
 
     def draw(self):
         self._batch.draw()
@@ -343,14 +350,14 @@ class World2DGrid(World):
         self._nhood = nhood
         self._grid = [[[] for c in range(width)] for l in range(height)]
 
-        #visual grid
-        if (grid):
+        # visual grid
+        if grid:
             shape = shapes.Grid(width * cell, height * cell, cell)
             shape.add_to_batch(self._batch)
             self._shapes.append(shape)
 
     def add_object(self, obj):
-        #check bounds
+        # check bounds
         if not self._tor:
             if obj.x > self._width - 1:
                 obj.x = self._width - 1
@@ -377,12 +384,12 @@ class World2DGrid(World):
     def process_agents(self, delta):
         for a in self._agents:
             if not a.is_dead:
-                #remove body from grid
+                # remove body from grid
                 self._grid[round(a.body.y)][round(a.body.x)].remove(a.body)
 
                 a.update(delta)
 
-                #re-add to grid
+                # re-add to grid
                 self._grid[round(a.body.y)][round(a.body.x)].append(a.body)
 
             if a.is_dead:
@@ -390,18 +397,18 @@ class World2DGrid(World):
 
     def update(self, delta):
         if not self.paused:
-            #process agents
+            # process agents
             self.process_agents(delta)
 
-            #update all objects
+            # update all objects
             for obj in self._objects:
 
-                #remove from _grid
+                # remove from _grid
                 self._grid[round(obj.y)][round(obj.x)].remove(obj)
 
                 obj.update(delta)
 
-                #check bounds
+                # check bounds
                 if not self._tor:
                     if obj.x > self._width - 1:
                         obj.x = self._width - 1
@@ -417,10 +424,10 @@ class World2DGrid(World):
                     if obj.y > self._height - 0.5 or obj.y < -0.5:
                         obj.y = round(obj.y) % self._height
 
-                #re-add to _grid
+                # re-add to _grid
                 self._grid[round(obj.y)][round(obj.x)].append(obj)
 
-            #remove dead agents
+            # remove dead agents
             self._remove_dead_agents()
 
     def draw_objects(self):
@@ -474,11 +481,12 @@ class World2DGrid(World):
         for dx, dy in self._nhood:
             x1 = x + dx
             y1 = y + dy
-            if not self._tor and 0 <= x1 < self._width and 0 <= y1 < self._height:
+            if not self._tor and 0 <= x1 < self._width and \
+                                    0 <= y1 < self._height:
                 result.extend(self._grid[y1][x1])
             elif self._tor:
-                x1 = x1 % self._width
-                y1 = y1 % self._height
+                x1 %= self._width
+                y1 %= self._height
                 result.extend(self._grid[y1][x1])
 
         return result
@@ -498,11 +506,12 @@ class World2DGrid(World):
         for dx, dy in self._nhood:
             x1 = x + dx
             y1 = y + dy
-            if not self._tor and 0 <= x1 < self._width and 0 <= y1 < self._height:
+            if not self._tor and 0 <= x1 < self._width and \
+                                    0 <= y1 < self._height:
                 result.append((x1, y1))
             elif self._tor:
-                x1 = x1 % self._width
-                y1 = y1 % self._height
+                x1 %= self._width
+                y1 %= self._height
                 result.append((x1, y1))
 
         return result
@@ -568,7 +577,7 @@ class Display(pyglet.window.Window):
 
         if symbol == key.F:
             self.show_fps = not (self.show_fps)
-        elif symbol == key.P:
+        elif symbol == key.SPACE:
             self.world.pause_toggle()
             if self.world.paused:
                 self.set_caption(self.caption + " (paused)")
