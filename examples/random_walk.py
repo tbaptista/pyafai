@@ -5,7 +5,9 @@
 # -----------------------------------------------------------------------------
 
 """
-Example implementation of an Object type that bounces on the limits of the world
+Small example of the implemenation of an agent that randomly moves on the world.
+Uses as body the bouncer object from another example to bounce on the world
+edges.
 """
 
 from __future__ import division
